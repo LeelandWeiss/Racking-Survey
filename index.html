@@ -223,6 +223,44 @@
     position: absolute; top: 16px; right: 16px; background: var(--red); color: #fff;
     border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 20px; cursor: pointer;
   }
+  .autosave-toast {
+    position: fixed;
+    top: 52px;
+    right: 10px;
+    background: rgba(46,125,50,0.92);
+    color: #fff;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    letter-spacing: 1px;
+    padding: 5px 12px;
+    border-radius: 3px;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .autosave-toast.show { opacity: 1; }
+  .restored-banner {
+    background: rgba(21,101,192,0.15);
+    border: 1px solid rgba(21,101,192,0.3);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    display: none;
+  }
+  .restored-banner.show { display: block; }
+  .restored-banner .rb-title {
+    font-size: 12px; font-weight: 700; color: #64B5F6; margin-bottom: 4px;
+  }
+  .restored-banner .rb-detail {
+    font-size: 11px; color: #90CAF9; line-height: 1.5;
+  }
+  .restored-banner .rb-dismiss {
+    background: transparent; border: 1px solid rgba(100,181,246,0.4);
+    color: #64B5F6; font-size: 10px; font-family: var(--font-mono);
+    padding: 4px 10px; border-radius: 3px; cursor: pointer; margin-top: 8px;
+    letter-spacing: 0.5px;
+  }
   .progress-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000;
     display: none; align-items: center; justify-content: center; flex-direction: column; gap: 16px;
@@ -252,8 +290,17 @@
 </div>
 
 <!-- STORE INFO -->
+<!-- Autosave indicator -->
+<div class="autosave-toast" id="autosave-toast">✓ Saved</div>
+
+<!-- Restored banner (shown on Store Info page when data is restored) -->
 <div id="view-header" class="view active">
   <div class="body-pad">
+    <div class="restored-banner" id="restored-banner">
+      <div class="rb-title">📂 Previous survey restored</div>
+      <div class="rb-detail" id="restored-detail">Your in-progress survey has been loaded.</div>
+      <button class="rb-dismiss" id="restored-dismiss">Got it</button>
+    </div>
     <div class="section-title">Survey Info</div>
     <label class="field-label">Store Number *</label>
     <input class="field" id="storeNumber" type="text" inputmode="numeric" placeholder="e.g. 042">
@@ -378,6 +425,89 @@ function freshFinding() {
 }
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 
+// ══════════════════════════════════════════
+// AUTO-SAVE / RESTORE
+// ══════════════════════════════════════════
+const STORAGE_KEY = "mccoys_racking_survey_v1";
+let saveTimeout = null;
+
+function saveState() {
+  // Debounce saves to avoid thrashing on rapid input
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    try {
+      const data = JSON.stringify({
+        storeNumber: state.storeNumber,
+        storeName: state.storeName,
+        surveyDate: state.surveyDate,
+        surveyorName: state.surveyorName,
+        findings: state.findings,
+        otherIssues: state.otherIssues,
+        savedAt: new Date().toISOString(),
+      });
+      localStorage.setItem(STORAGE_KEY, data);
+      showSaveToast();
+    } catch(e) { console.warn("Auto-save failed:", e); }
+  }, 400);
+}
+
+function showSaveToast() {
+  const toast = document.getElementById("autosave-toast");
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 1200);
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (!data.storeNumber && !data.storeName && !data.findings?.length && !data.otherIssues?.length) return false;
+
+    state.storeNumber = data.storeNumber || "";
+    state.storeName = data.storeName || "";
+    state.surveyDate = data.surveyDate || new Date().toISOString().split("T")[0];
+    state.surveyorName = data.surveyorName || "";
+    state.findings = data.findings || [];
+    state.otherIssues = data.otherIssues || [];
+
+    // Populate form fields
+    document.getElementById("storeNumber").value = state.storeNumber;
+    document.getElementById("storeName").value = state.storeName;
+    document.getElementById("surveyDate").value = state.surveyDate;
+    document.getElementById("surveyorName").value = state.surveyorName;
+    updateNavCount();
+
+    // Show restored banner
+    const banner = document.getElementById("restored-banner");
+    const detail = document.getElementById("restored-detail");
+    const parts = [];
+    if (state.storeNumber || state.storeName) parts.push(`Store #${state.storeNumber} — ${state.storeName}`);
+    if (state.findings.length) parts.push(`${state.findings.length} racking item${state.findings.length!==1?"s":""}`);
+    if (state.otherIssues.length) parts.push(`${state.otherIssues.length} other issue${state.otherIssues.length!==1?"s":""}`);
+    if (data.savedAt) {
+      const d = new Date(data.savedAt);
+      parts.push(`last saved ${d.toLocaleDateString()} ${d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`);
+    }
+    detail.textContent = parts.join(" · ");
+    banner.classList.add("show");
+
+    return true;
+  } catch(e) { console.warn("Load failed:", e); return false; }
+}
+
+function clearSavedState() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+}
+
+// Dismiss restored banner
+document.getElementById("restored-dismiss").addEventListener("click", () => {
+  document.getElementById("restored-banner").classList.remove("show");
+});
+
+// Load on startup
+const wasRestored = loadState();
+
 document.getElementById("surveyDate").value = state.surveyDate;
 const pillGrid = document.getElementById("racking-pills");
 RACKING_TYPES.forEach(t => {
@@ -408,9 +538,9 @@ navBtns.forEach(b => {
 
 // HEADER
 ["storeNumber","storeName","surveyorName"].forEach(id => {
-  document.getElementById(id).addEventListener("input", e => { state[id] = e.target.value; validateHeader(); });
+  document.getElementById(id).addEventListener("input", e => { state[id] = e.target.value; validateHeader(); saveState(); });
 });
-document.getElementById("surveyDate").addEventListener("input", e => { state.surveyDate = e.target.value; });
+document.getElementById("surveyDate").addEventListener("input", e => { state.surveyDate = e.target.value; saveState(); });
 function validateHeader() {
   const valid = state.storeNumber && state.storeName && state.surveyorName;
   const btn = document.getElementById("btn-start");
@@ -466,7 +596,7 @@ document.getElementById("btn-save-finding").addEventListener("click", () => {
   if (state.editingIndex !== null) state.findings[state.editingIndex] = { ...currentFinding };
   else state.findings.push({ ...currentFinding });
   currentFinding = freshFinding(); state.editingIndex = null;
-  resetFindingForm(); updateNavCount(); showView("review");
+  resetFindingForm(); updateNavCount(); saveState(); showView("review");
 });
 document.getElementById("btn-cancel-finding").addEventListener("click", () => {
   currentFinding = freshFinding(); state.editingIndex = null; resetFindingForm(); showView("review");
@@ -501,7 +631,7 @@ function renderReview() {
     const editBtn = document.createElement("button"); editBtn.className = "btn-ghost"; editBtn.textContent = "Edit";
     editBtn.addEventListener("click", () => { currentFinding = { ...f }; state.editingIndex = i; resetFindingForm(); showView("addFinding"); });
     const delBtn = document.createElement("button"); delBtn.className = "btn-ghost danger"; delBtn.textContent = "Delete";
-    delBtn.addEventListener("click", () => { state.findings.splice(i,1); updateNavCount(); renderReview(); });
+    delBtn.addEventListener("click", () => { state.findings.splice(i,1); updateNavCount(); saveState(); renderReview(); });
     actions.appendChild(editBtn); actions.appendChild(delBtn); list.appendChild(card);
   });
 }
@@ -541,7 +671,7 @@ document.getElementById("btn-save-issue").addEventListener("click", () => {
   state.otherIssues.push({ id: uid(), text, photos: [...currentOtherPhotos] });
   document.getElementById("otherIssueText").value = "";
   currentOtherPhotos = [];
-  renderOtherPhotos(); renderOtherIssues();
+  renderOtherPhotos(); renderOtherIssues(); saveState();
 });
 function renderOtherIssues() {
   const list = document.getElementById("other-issues-list"); list.innerHTML = "";
@@ -563,7 +693,7 @@ function renderOtherIssues() {
     card.innerHTML = html;
     const actions = card.querySelector(".card-actions");
     const delBtn = document.createElement("button"); delBtn.className = "btn-ghost danger"; delBtn.textContent = "Delete";
-    delBtn.addEventListener("click", () => { state.otherIssues.splice(i,1); renderOtherIssues(); });
+    delBtn.addEventListener("click", () => { state.otherIssues.splice(i,1); renderOtherIssues(); saveState(); });
     actions.appendChild(delBtn); list.appendChild(card);
   });
 }
@@ -888,6 +1018,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 // NEW SURVEY
 document.getElementById("btn-new-survey").addEventListener("click", () => {
   if (!confirm("Start a new survey? Current data will be cleared.")) return;
+  clearSavedState();
   state.storeNumber = ""; state.storeName = "";
   state.surveyDate = new Date().toISOString().split("T")[0];
   state.surveyorName = ""; state.findings = []; state.otherIssues = [];
@@ -903,6 +1034,33 @@ document.getElementById("photo-modal").addEventListener("click", () => document.
 document.getElementById("modal-close").addEventListener("click", () => document.getElementById("photo-modal").classList.remove("open"));
 
 function esc(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+// Save when leaving or switching apps
+window.addEventListener("beforeunload", () => {
+  try {
+    const data = JSON.stringify({
+      storeNumber: state.storeNumber, storeName: state.storeName,
+      surveyDate: state.surveyDate, surveyorName: state.surveyorName,
+      findings: state.findings, otherIssues: state.otherIssues,
+      savedAt: new Date().toISOString(),
+    });
+    localStorage.setItem(STORAGE_KEY, data);
+  } catch(e) {}
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    try {
+      const data = JSON.stringify({
+        storeNumber: state.storeNumber, storeName: state.storeName,
+        surveyDate: state.surveyDate, surveyorName: state.surveyorName,
+        findings: state.findings, otherIssues: state.otherIssues,
+        savedAt: new Date().toISOString(),
+      });
+      localStorage.setItem(STORAGE_KEY, data);
+    } catch(e) {}
+  }
+});
+
 validateHeader();
 </script>
 </body>

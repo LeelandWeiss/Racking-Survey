@@ -11,28 +11,32 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root {
-    --red: #c62828;
-    --red-light: rgba(198,40,40,0.15);
-    --red-text: #ff8a80;
-    --bg: #1a1a1a;
-    --surface: #222;
-    --surface-alt: #252525;
-    --surface-dark: #1e1e1e;
-    --border: #333;
-    --border-light: #3a3a3a;
-    --border-mid: #444;
-    --text: #e0ddd5;
-    --text-dim: #999;
+    --primary: #1B5E20;
+    --primary-dark: #0D3B12;
+    --primary-light: rgba(27,94,32,0.15);
+    --primary-text: #81C784;
+    --accent: #FFD600;
+    --accent-dark: #C8A600;
+    --accent-text: #1B5E20;
+    --bg: #f5f2ec;
+    --surface: #fff;
+    --surface-alt: #faf8f4;
+    --surface-dark: #ede9e0;
+    --border: #d5cfbf;
+    --border-light: #e0dbd0;
+    --border-mid: #c8c1b0;
+    --text: #2c2c2c;
+    --text-dim: #666;
     --text-dimmer: #888;
-    --text-faint: #777;
-    --text-ghost: #666;
-    --text-muted: #555;
-    --text-card: #ccc;
-    --text-desc: #aaa;
-    --green-bg: #1a2e1a;
+    --text-faint: #999;
+    --text-ghost: #aaa;
+    --text-muted: #bbb;
+    --text-card: #333;
+    --text-desc: #555;
+    --green-bg: #e8f5e9;
     --green-border: #2E7D32;
-    --green-title: #81C784;
-    --green-text: #a5d6a7;
+    --green-title: #1B5E20;
+    --green-text: #2E7D32;
     --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
     --font-display: 'Oswald', 'Impact', sans-serif;
   }
@@ -49,7 +53,7 @@
     -webkit-font-smoothing: antialiased;
   }
   .top-bar {
-    background: var(--red);
+    background: var(--primary);
     padding: 14px 18px;
     position: sticky;
     top: 0;
@@ -59,7 +63,7 @@
     font-family: var(--font-display);
     font-size: 18px;
     font-weight: 700;
-    color: #fff;
+    color: var(--accent);
     letter-spacing: 1.5px;
     text-transform: uppercase;
     line-height: 1.1;
@@ -74,8 +78,8 @@
   }
   .bottom-nav {
     display: flex;
-    background: var(--surface-dark);
-    border-top: 1px solid var(--border);
+    background: var(--primary-dark);
+    border-top: 1px solid rgba(255,255,255,0.1);
     position: fixed;
     bottom: 0; left: 0; right: 0;
     max-width: 600px;
@@ -88,7 +92,7 @@
     background: transparent;
     border: none;
     border-top: 2px solid transparent;
-    color: var(--text-ghost);
+    color: rgba(255,255,255,0.45);
     font-size: 9px;
     font-family: var(--font-mono);
     letter-spacing: 0.5px;
@@ -97,7 +101,7 @@
     text-align: center;
     transition: all 0.15s;
   }
-  .nav-btn.active { background: var(--surface-alt); border-top-color: var(--red); color: #fff; }
+  .nav-btn.active { background: var(--primary); border-top-color: var(--accent); color: var(--accent); }
   .nav-btn .icon { font-size: 17px; margin-bottom: 2px; }
   .view { display: none; }
   .view.active { display: block; }
@@ -105,11 +109,11 @@
   .section-title {
     font-family: var(--font-display);
     font-size: 13px;
-    color: var(--text-dim);
+    color: var(--primary);
     letter-spacing: 3px;
     text-transform: uppercase;
     margin-bottom: 12px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 2px solid var(--accent);
     padding-bottom: 6px;
   }
   label.field-label {
@@ -123,7 +127,7 @@
   }
   input.field, textarea.field {
     width: 100%;
-    background: var(--surface-alt);
+    background: #fff;
     border: 1px solid var(--border-light);
     color: var(--text);
     padding: 12px;
@@ -133,18 +137,18 @@
     outline: none;
     transition: border-color 0.15s;
   }
-  input.field:focus, textarea.field:focus { border-color: var(--red); }
+  input.field:focus, textarea.field:focus { border-color: var(--primary); }
   textarea.field { font-size: 14px; min-height: 80px; resize: vertical; }
   .pill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
   .pill {
     padding: 12px 18px; border-radius: 4px; border: 1px solid var(--border-mid);
-    background: var(--surface-alt); color: #bbb; font-size: 14px;
+    background: var(--surface); color: var(--text-dim); font-size: 14px;
     font-family: var(--font-mono); cursor: pointer; font-weight: 400;
     text-align: center; transition: all 0.15s; user-select: none; -webkit-user-select: none;
   }
-  .pill.active { border: 2px solid var(--red); background: var(--red-light); color: var(--red-text); font-weight: 700; }
+  .pill.active { border: 2px solid var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 700; }
   .btn-primary {
-    width: 100%; padding: 16px; background: var(--red); color: #fff; border: none;
+    width: 100%; padding: 16px; background: var(--primary); color: var(--accent); border: none;
     font-size: 14px; font-family: var(--font-display); font-weight: 700;
     letter-spacing: 2px; text-transform: uppercase; border-radius: 4px;
     cursor: pointer; margin-top: 20px; transition: opacity 0.15s;
@@ -152,8 +156,8 @@
   .btn-primary:disabled { opacity: 0.4; }
   .btn-primary:active:not(:disabled) { opacity: 0.8; }
   .btn-outline {
-    width: 100%; padding: 14px; background: transparent; color: var(--red);
-    border: 2px solid var(--red); font-size: 13px; font-family: var(--font-display);
+    width: 100%; padding: 14px; background: transparent; color: var(--primary);
+    border: 2px solid var(--primary); font-size: 13px; font-family: var(--font-display);
     font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
     border-radius: 4px; cursor: pointer; margin-top: 10px;
   }
@@ -163,8 +167,8 @@
     letter-spacing: 1px; text-transform: uppercase; border-radius: 3px; cursor: pointer;
     transition: all 0.15s;
   }
-  .btn-ghost:active { background: rgba(255,255,255,0.05); }
-  .btn-ghost.danger { color: var(--red); border-color: var(--red); }
+  .btn-ghost:active { background: rgba(0,0,0,0.05); }
+  .btn-ghost.danger { color: #c62828; border-color: #c62828; }
   .card {
     background: var(--surface); border: 1px solid var(--border);
     border-radius: 6px; padding: 14px; margin-bottom: 12px;
@@ -181,7 +185,7 @@
     border-radius: 4px; border: 1px solid var(--border-mid); cursor: pointer;
   }
   .photo-remove {
-    position: absolute; top: 2px; right: 2px; background: var(--red); color: #fff;
+    position: absolute; top: 2px; right: 2px; background: #c62828; color: #fff;
     border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 13px;
     cursor: pointer; line-height: 20px; text-align: center;
   }
@@ -191,22 +195,22 @@
     border: 1px solid var(--border-mid); cursor: pointer;
   }
   .counter-bar {
-    text-align: center; padding: 16px; background: var(--surface-dark);
-    border-bottom: 1px solid var(--border);
+    text-align: center; padding: 16px; background: var(--primary);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
   }
-  .counter-num { font-family: var(--font-display); font-size: 32px; font-weight: 700; color: #fff; }
-  .counter-label { font-size: 10px; letter-spacing: 2px; color: var(--text-faint); text-transform: uppercase; }
+  .counter-num { font-family: var(--font-display); font-size: 32px; font-weight: 700; color: var(--accent); }
+  .counter-label { font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.7); text-transform: uppercase; }
   .export-ready { background: var(--green-bg); border-color: var(--green-border); }
   .export-ready .title { font-size: 13px; font-weight: 700; color: var(--green-title); margin-bottom: 6px; }
   .export-ready .detail { font-size: 12px; color: var(--green-text); line-height: 1.6; }
   .report-preview {
-    background: #111; border: 1px solid var(--border); border-radius: 6px; padding: 14px;
-    font-size: 11px; color: var(--text-desc); white-space: pre-wrap; word-break: break-word;
+    background: #f0ede5; border: 1px solid var(--border); border-radius: 6px; padding: 14px;
+    font-size: 11px; color: var(--text); white-space: pre-wrap; word-break: break-word;
     line-height: 1.5; max-height: 400px; overflow-y: auto; font-family: var(--font-mono);
   }
   .photo-reminder {
     margin-top: 20px; padding: 14px; background: var(--surface-alt);
-    border-radius: 6px; border-left: 3px solid var(--red);
+    border-radius: 6px; border-left: 3px solid var(--primary);
   }
   .photo-reminder .title { font-size: 12px; font-weight: 700; color: var(--text-card); margin-bottom: 6px; }
   .photo-reminder .detail { font-size: 11px; color: var(--text-dimmer); line-height: 1.6; }
@@ -220,7 +224,7 @@
   .modal-overlay.open { display: flex; }
   .modal-overlay img { max-width: 100%; max-height: 100%; border-radius: 4px; }
   .modal-close {
-    position: absolute; top: 16px; right: 16px; background: var(--red); color: #fff;
+    position: absolute; top: 16px; right: 16px; background: var(--accent); color: var(--primary);
     border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 20px; cursor: pointer;
   }
   .autosave-toast {
@@ -270,11 +274,11 @@
     width: 260px; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;
   }
   .progress-bar-fill {
-    height: 100%; background: var(--red); border-radius: 4px; transition: width 0.3s;
+    height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s;
   }
-  .progress-text { color: var(--text-dim); font-size: 12px; font-family: var(--font-mono); }
+  .progress-text { color: #ddd; font-size: 12px; font-family: var(--font-mono); }
   .btn-pdf {
-    width: 100%; padding: 16px; background: #1565C0; color: #fff; border: none;
+    width: 100%; padding: 16px; background: var(--accent); color: var(--primary); border: none;
     font-size: 14px; font-family: var(--font-display); font-weight: 700;
     letter-spacing: 2px; text-transform: uppercase; border-radius: 4px;
     cursor: pointer; margin-top: 12px; transition: opacity 0.15s;
@@ -378,7 +382,7 @@
     <div style="font-size:11px;color:var(--text-ghost);text-align:center;margin-top:8px">
       Full report with all photos embedded — attach to FEXA work order
     </div>
-    <button class="btn-primary" id="btn-copy" style="background:#555">📋&nbsp;&nbsp;Copy Text Report to Clipboard</button>
+    <button class="btn-outline" id="btn-copy">📋&nbsp;&nbsp;Copy Text Report to Clipboard</button>
     <div style="font-size:11px;color:var(--text-ghost);text-align:center;margin-top:8px">
       Text only — paste into FEXA work order description
     </div>
@@ -905,16 +909,17 @@ async function generatePDF() {
     await sleep(50);
 
     // ── HEADER ──
-    doc.setFillColor(198, 40, 40);
+    doc.setFillColor(27, 94, 32);
     doc.rect(0, 0, pw, 28, "F");
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
-    doc.setTextColor(255);
+    doc.setTextColor(255, 214, 0);
     doc.text("McCOYS BUILDING SUPPLY", ml, 12);
     doc.setFontSize(11);
+    doc.setTextColor(255);
     doc.text("RACKING SURVEY REPORT", ml, 20);
     doc.setFontSize(8);
-    doc.setTextColor(255, 200, 200);
+    doc.setTextColor(255, 214, 0);
     doc.text("Construction & Maintenance", ml, 25);
 
     y = 36;
@@ -953,11 +958,11 @@ async function generatePDF() {
       checkPage(35);
 
       // Item header bar
-      doc.setFillColor(240, 240, 240);
+      doc.setFillColor(232, 245, 233);
       doc.rect(ml, y - 4, cw, 8, "F");
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
-      doc.setTextColor(198, 40, 40);
+      doc.setTextColor(27, 94, 32);
       doc.text(`ITEM #${i + 1} — ${f.rackingType}`, ml + 2, y + 1);
       y += 8;
 
@@ -1024,7 +1029,7 @@ async function generatePDF() {
       updateProgress("Adding other issues...", 90);
       checkPage(20);
 
-      doc.setFillColor(198, 40, 40);
+      doc.setFillColor(27, 94, 32);
       doc.rect(ml, y - 4, cw, 8, "F");
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);

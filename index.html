@@ -284,6 +284,47 @@
     cursor: pointer; margin-top: 12px; transition: opacity 0.15s;
   }
   .btn-pdf:active { opacity: 0.8; }
+  .other-type-input {
+    width: 100%; background: #fff; border: 1px solid var(--border-light); color: var(--text);
+    padding: 12px; font-size: 16px; font-family: var(--font-mono); border-radius: 4px;
+    outline: none; margin-top: 8px; transition: border-color 0.15s; display: none;
+  }
+  .other-type-input.show { display: block; }
+  .other-type-input:focus { border-color: var(--primary); }
+  .card.dragging { opacity: 0.4; border: 2px dashed var(--primary); }
+  .card.drag-over { border-top: 3px solid var(--accent); margin-top: -1px; }
+  .drag-handle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; color: var(--text-ghost); font-size: 18px;
+    cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+    flex-shrink: 0; margin-right: 8px;
+  }
+  .drag-handle:active { cursor: grabbing; }
+  .card-header-row { display: flex; align-items: center; }
+  .card-header-row .card-title { flex: 1; margin-bottom: 0; }
+  .btn-ghost.dup { color: var(--primary); border-color: var(--primary); }
+  .history-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1500;
+    display: none; align-items: flex-end; justify-content: center;
+  }
+  .history-overlay.open { display: flex; }
+  .history-panel {
+    background: var(--bg); border-radius: 12px 12px 0 0; width: 100%; max-width: 600px;
+    max-height: 75vh; overflow-y: auto; padding: 16px 16px 80px;
+  }
+  .history-panel .section-title { margin-top: 0; }
+  .history-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer; transition: all 0.15s;
+  }
+  .history-card:active { background: var(--surface-alt); }
+  .history-card .hc-store { font-size: 14px; font-weight: 700; color: var(--text-card); }
+  .history-card .hc-detail { font-size: 11px; color: var(--text-dim); margin-top: 4px; line-height: 1.6; }
+  .history-card .hc-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .reorder-hint {
+    font-size: 11px; color: var(--text-faint); text-align: center;
+    margin-bottom: 12px; letter-spacing: 0.5px;
+  }
 </style>
 </head>
 <body>
@@ -315,6 +356,7 @@
     <label class="field-label">Surveyor Name *</label>
     <input class="field" id="surveyorName" type="text" placeholder="Your name">
     <button class="btn-primary" id="btn-start" disabled>Start Adding Findings</button>
+    <button class="btn-outline" id="btn-view-history-header" style="margin-top:8px;color:var(--text-dim);border-color:var(--border-mid)">📂&nbsp;&nbsp;View Survey History</button>
   </div>
 </div>
 
@@ -324,6 +366,7 @@
     <div class="section-title" id="finding-title">New Item #1</div>
     <label class="field-label">Racking Type *</label>
     <div class="pill-grid" id="racking-pills"></div>
+    <input class="other-type-input" id="customRackingType" type="text" placeholder="Specify racking type...">
     <label class="field-label">Part Type</label>
     <input class="field" id="partType" type="text" placeholder="e.g. Arm, Upright, Beam, Shelf...">
     <label class="field-label">Part Dimensions</label>
@@ -391,6 +434,7 @@
       <pre class="report-preview" id="report-preview"></pre>
     </div>
     <button class="btn-outline" id="btn-new-survey" style="margin-top:20px">Start New Survey</button>
+    <button class="btn-outline" id="btn-view-history" style="margin-top:8px;color:var(--text-dim);border-color:var(--border-mid)">📂&nbsp;&nbsp;View Survey History</button>
   </div>
 </div>
 
@@ -406,6 +450,15 @@
   <div class="progress-bar-track"><div class="progress-bar-fill" id="pdf-progress-bar" style="width:0%"></div></div>
 </div>
 
+<!-- Survey History -->
+<div class="history-overlay" id="history-overlay">
+  <div class="history-panel">
+    <div class="section-title">Survey History</div>
+    <div id="history-list"></div>
+    <button class="btn-outline" style="margin-top:10px" id="btn-close-history">Close</button>
+  </div>
+</div>
+
 <!-- Bottom Nav -->
 <div class="bottom-nav">
   <button class="nav-btn active" data-view="header"><div class="icon">🏪</div>Store</button>
@@ -416,7 +469,7 @@
 </div>
 
 <script>
-const RACKING_TYPES = ["Cantilever", "Pigeonhole", "Pallet Racking", "Mezzanine"];
+const RACKING_TYPES = ["Cantilever", "Pigeonhole", "Pallet Racking", "Mezzanine", "Other"];
 const state = {
   storeNumber: "", storeName: "", surveyDate: new Date().toISOString().split("T")[0],
   surveyorName: "", findings: [], otherIssues: [], editingIndex: null,
@@ -425,7 +478,7 @@ let currentFinding = freshFinding();
 let currentOtherPhotos = [];
 
 function freshFinding() {
-  return { id: uid(), rackingType: "", partType: "", partDimensions: "", location: "", quantity: "", description: "", photoPreviews: [] };
+  return { id: uid(), rackingType: "", customRackingType: "", partType: "", partDimensions: "", location: "", quantity: "", description: "", photoPreviews: [] };
 }
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 
@@ -463,8 +516,12 @@ function compressPhoto(dataUrl, maxDim, quality) {
 // ── IndexedDB helpers (fallback for large data) ──
 function openIDB() {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(IDB_NAME, 1);
-    req.onupgradeneeded = () => { req.result.createObjectStore(IDB_STORE); };
+    const req = indexedDB.open(IDB_NAME, 2);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+      if (!db.objectStoreNames.contains("history")) db.createObjectStore("history");
+    };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
   });
@@ -609,7 +666,12 @@ const pillGrid = document.getElementById("racking-pills");
 RACKING_TYPES.forEach(t => {
   const d = document.createElement("div");
   d.className = "pill"; d.textContent = t;
-  d.addEventListener("click", () => { currentFinding.rackingType = t; renderPills(); validateFinding(); });
+  d.addEventListener("click", () => {
+    currentFinding.rackingType = t;
+    if (t !== "Other") currentFinding.customRackingType = "";
+    renderPills(); validateFinding();
+    if (t === "Other") setTimeout(() => document.getElementById("customRackingType").focus(), 50);
+  });
   pillGrid.appendChild(d);
 });
 
@@ -648,8 +710,28 @@ document.getElementById("btn-start").addEventListener("click", () => {
 });
 
 // FINDING
-function renderPills() { pillGrid.querySelectorAll(".pill").forEach((p,i) => p.classList.toggle("active", RACKING_TYPES[i]===currentFinding.rackingType)); }
-function validateFinding() { document.getElementById("btn-save-finding").disabled = !currentFinding.rackingType; }
+function getRackingLabel(f) {
+  if (f.rackingType === "Other" && f.customRackingType) return f.customRackingType;
+  return f.rackingType;
+}
+function renderPills() {
+  pillGrid.querySelectorAll(".pill").forEach((p,i) => p.classList.toggle("active", RACKING_TYPES[i]===currentFinding.rackingType));
+  const otherInput = document.getElementById("customRackingType");
+  if (currentFinding.rackingType === "Other") {
+    otherInput.classList.add("show");
+    otherInput.value = currentFinding.customRackingType || "";
+  } else {
+    otherInput.classList.remove("show");
+  }
+}
+function validateFinding() {
+  const valid = currentFinding.rackingType && (currentFinding.rackingType !== "Other" || currentFinding.customRackingType);
+  document.getElementById("btn-save-finding").disabled = !valid;
+}
+document.getElementById("customRackingType").addEventListener("input", e => {
+  currentFinding.customRackingType = e.target.value;
+  validateFinding();
+});
 function resetFindingForm() {
   document.getElementById("finding-title").textContent = state.editingIndex !== null ? `Edit Item #${state.editingIndex+1}` : `New Item #${state.findings.length+1}`;
   document.getElementById("partType").value = currentFinding.partType;
@@ -702,7 +784,8 @@ document.getElementById("btn-cancel-finding").addEventListener("click", () => {
   currentFinding = freshFinding(); state.editingIndex = null; resetFindingForm(); showView("review");
 });
 
-// REVIEW
+// REVIEW — with drag-and-drop reordering and duplicate
+let dragIdx = null;
 function renderReview() {
   document.getElementById("review-count").textContent = state.findings.length;
   document.getElementById("review-label").textContent = `Item${state.findings.length!==1?"s":""} Found — Store #${state.storeNumber}`;
@@ -711,9 +794,64 @@ function renderReview() {
     list.innerHTML = '<div class="empty"><div class="icon">📋</div><div>No findings yet</div><div class="hint">Tap "Add Item" to start</div></div>';
     return;
   }
+  if (state.findings.length > 1) {
+    const hint = document.createElement("div"); hint.className = "reorder-hint";
+    hint.textContent = "☰ Drag items to reorder"; list.appendChild(hint);
+  }
   state.findings.forEach((f,i) => {
     const card = document.createElement("div"); card.className = "card";
-    let html = `<div class="card-title">#${i+1} — ${f.rackingType}</div><div class="card-detail">`;
+    card.draggable = true;
+    card.dataset.idx = i;
+
+    // Touch drag support
+    let touchStartY = 0, touchClone = null, touchIdx = null;
+    card.addEventListener("touchstart", (e) => {
+      const handle = e.target.closest(".drag-handle");
+      if (!handle) return;
+      touchIdx = i;
+      touchStartY = e.touches[0].clientY;
+      card.classList.add("dragging");
+    }, { passive: true });
+    card.addEventListener("touchmove", (e) => {
+      if (touchIdx === null) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const elBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+      const cardBelow = elBelow?.closest?.(".card[data-idx]");
+      list.querySelectorAll(".card").forEach(c => c.classList.remove("drag-over"));
+      if (cardBelow && cardBelow !== card) cardBelow.classList.add("drag-over");
+    }, { passive: false });
+    card.addEventListener("touchend", (e) => {
+      if (touchIdx === null) return;
+      card.classList.remove("dragging");
+      const touch = e.changedTouches[0];
+      const elBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+      const cardBelow = elBelow?.closest?.(".card[data-idx]");
+      list.querySelectorAll(".card").forEach(c => c.classList.remove("drag-over"));
+      if (cardBelow && cardBelow !== card) {
+        const toIdx = parseInt(cardBelow.dataset.idx);
+        const item = state.findings.splice(touchIdx, 1)[0];
+        state.findings.splice(toIdx, 0, item);
+        saveState(); renderReview();
+      }
+      touchIdx = null;
+    });
+
+    // Desktop drag
+    card.addEventListener("dragstart", (e) => { dragIdx = i; card.classList.add("dragging"); e.dataTransfer.effectAllowed = "move"; });
+    card.addEventListener("dragend", () => { card.classList.remove("dragging"); dragIdx = null; list.querySelectorAll(".card").forEach(c => c.classList.remove("drag-over")); });
+    card.addEventListener("dragover", (e) => { e.preventDefault(); if (dragIdx !== null && dragIdx !== i) card.classList.add("drag-over"); });
+    card.addEventListener("dragleave", () => card.classList.remove("drag-over"));
+    card.addEventListener("drop", (e) => {
+      e.preventDefault(); card.classList.remove("drag-over");
+      if (dragIdx === null || dragIdx === i) return;
+      const item = state.findings.splice(dragIdx, 1)[0];
+      state.findings.splice(i, 0, item);
+      dragIdx = null; saveState(); renderReview();
+    });
+
+    const label = getRackingLabel(f);
+    let html = `<div class="card-header-row"><div class="drag-handle">☰</div><div class="card-title">#${i+1} — ${esc(label)}</div></div><div class="card-detail">`;
     if (f.partType) html += `<div><span class="lbl">Part:</span> ${esc(f.partType)}</div>`;
     if (f.partDimensions) html += `<div><span class="lbl">Dimensions:</span> ${esc(f.partDimensions)}</div>`;
     if (f.location) html += `<div><span class="lbl">Location:</span> ${esc(f.location)}</div>`;
@@ -721,7 +859,7 @@ function renderReview() {
     if (f.description) html += `<div class="card-desc">${esc(f.description)}</div>`;
     if (f.photoPreviews.length > 0) {
       html += '<div class="photo-row">';
-      f.photoPreviews.slice(0,4).forEach(src => { html += `<img src="${src}" alt="" onclick="openModal('${src.replace(/'/g,"\\'")}')">` });
+      f.photoPreviews.slice(0,4).forEach((src,pi) => { html += `<img src="${src}" alt="Item ${i+1} Photo ${pi+1}" onclick="openModal('${src.replace(/'/g,"\\'")}')">` });
       if (f.photoPreviews.length > 4) html += `<span style="font-size:11px;color:var(--text-ghost);align-self:center">+${f.photoPreviews.length-4}</span>`;
       html += '</div>';
     }
@@ -730,9 +868,26 @@ function renderReview() {
     const actions = card.querySelector(".card-actions");
     const editBtn = document.createElement("button"); editBtn.className = "btn-ghost"; editBtn.textContent = "Edit";
     editBtn.addEventListener("click", () => { currentFinding = { ...f }; state.editingIndex = i; resetFindingForm(); showView("addFinding"); });
+    const dupBtn = document.createElement("button"); dupBtn.className = "btn-ghost dup"; dupBtn.textContent = "Duplicate";
+    dupBtn.addEventListener("click", () => {
+      currentFinding = {
+        id: uid(),
+        rackingType: f.rackingType,
+        customRackingType: f.customRackingType || "",
+        partType: f.partType,
+        partDimensions: f.partDimensions,
+        location: "",
+        quantity: "",
+        description: "",
+        photoPreviews: [],
+      };
+      state.editingIndex = null;
+      resetFindingForm();
+      showView("addFinding");
+    });
     const delBtn = document.createElement("button"); delBtn.className = "btn-ghost danger"; delBtn.textContent = "Delete";
     delBtn.addEventListener("click", () => { state.findings.splice(i,1); updateNavCount(); saveState(); renderReview(); });
-    actions.appendChild(editBtn); actions.appendChild(delBtn); list.appendChild(card);
+    actions.appendChild(editBtn); actions.appendChild(dupBtn); actions.appendChild(delBtn); list.appendChild(card);
   });
 }
 document.getElementById("btn-add-new").addEventListener("click", () => {
@@ -816,7 +971,7 @@ function buildExportText() {
   L.push("");
   state.findings.forEach((f,i) => {
     L.push("──────────────────────────────────────────");
-    L.push(`ITEM #${i+1} — ${f.rackingType}`);
+    L.push(`ITEM #${i+1} — ${getRackingLabel(f)}`);
     L.push("──────────────────────────────────────────");
     if (f.partType) L.push(`Part Type: ${f.partType}`);
     if (f.partDimensions) L.push(`Part Dimensions: ${f.partDimensions}`);
@@ -963,7 +1118,7 @@ async function generatePDF() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
       doc.setTextColor(27, 94, 32);
-      doc.text(`ITEM #${i + 1} — ${f.rackingType}`, ml + 2, y + 1);
+      doc.text(`ITEM #${i + 1} — ${getRackingLabel(f)}`, ml + 2, y + 1);
       y += 8;
 
       doc.setFontSize(9);
@@ -996,7 +1151,7 @@ async function generatePDF() {
         y += 2;
       }
 
-      // Photos
+      // Photos with captions
       if (f.photoPreviews.length > 0) {
         for (let pi = 0; pi < f.photoPreviews.length; pi++) {
           updateProgress(`Item ${i+1}: photo ${pi+1} of ${f.photoPreviews.length}...`, 10 + (photosProcessed / totalPhotos) * 80);
@@ -1010,12 +1165,19 @@ async function generatePDF() {
             if (ratio > maxW / maxH) { iw = maxW; ih = iw / ratio; }
             else { ih = maxH; iw = ih * ratio; }
 
-            checkPage(ih + 4);
+            checkPage(ih + 10);
             const xOffset = (pi % 2 === 0) ? ml : ml + cw / 2 + 1;
             if (pi % 2 === 0 && pi > 0) y += 2;
             const imgY = y;
             doc.addImage(imgData, "JPEG", xOffset, imgY, iw, ih);
-            if (pi % 2 === 1 || pi === f.photoPreviews.length - 1) y = imgY + ih + 2;
+            // Photo caption
+            doc.setFont("helvetica", "italic");
+            doc.setFontSize(7);
+            doc.setTextColor(120);
+            const caption = `Item #${i+1} — Photo ${pi+1} of ${f.photoPreviews.length} — ${getRackingLabel(f)}${f.location ? " — " + f.location : ""}`;
+            doc.text(caption, xOffset, imgY + ih + 3);
+            doc.setFontSize(9); doc.setFont("helvetica", "normal");
+            if (pi % 2 === 1 || pi === f.photoPreviews.length - 1) y = imgY + ih + 6;
           } catch(err) { console.warn("Photo error", err); }
           photosProcessed++;
         }
@@ -1068,12 +1230,18 @@ async function generatePDF() {
               if (ratio > maxW / maxH) { iw = maxW; ih = iw / ratio; }
               else { ih = maxH; iw = ih * ratio; }
 
-              checkPage(ih + 4);
+              checkPage(ih + 10);
               const xOffset = (pi % 2 === 0) ? ml : ml + cw / 2 + 1;
               if (pi % 2 === 0 && pi > 0) y += 2;
               const imgY = y;
               doc.addImage(issue.photos[pi], "JPEG", xOffset, imgY, iw, ih);
-              if (pi % 2 === 1 || pi === issue.photos.length - 1) y = imgY + ih + 2;
+              // Photo caption
+              doc.setFont("helvetica", "italic");
+              doc.setFontSize(7);
+              doc.setTextColor(120);
+              doc.text(`Issue #${i+1} — Photo ${pi+1} of ${issue.photos.length}`, xOffset, imgY + ih + 3);
+              doc.setFontSize(9); doc.setFont("helvetica", "normal");
+              if (pi % 2 === 1 || pi === issue.photos.length - 1) y = imgY + ih + 6;
             } catch(err) { console.warn("Photo error", err); }
             photosProcessed++;
           }
@@ -1120,9 +1288,136 @@ function getImageDims(dataUrl) {
 }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// NEW SURVEY
-document.getElementById("btn-new-survey").addEventListener("click", () => {
-  if (!confirm("Start a new survey? Current data will be cleared.")) return;
+// ══════════════════════════════════════════
+// SURVEY HISTORY
+// ══════════════════════════════════════════
+const HISTORY_KEY = "mccoys_survey_history_v1";
+const IDB_HISTORY_STORE = "history";
+
+async function loadHistory() {
+  // Try localStorage
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  // Try IDB
+  try {
+    const db = await openIDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_HISTORY_STORE, "readonly");
+      const req = tx.objectStore(IDB_HISTORY_STORE).get("all");
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => resolve([]);
+    });
+  } catch(e) { return []; }
+}
+
+async function saveHistory(history) {
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  } catch(e) {
+    try {
+      const db = await openIDB();
+      const tx = db.transaction(IDB_HISTORY_STORE, "readwrite");
+      tx.objectStore(IDB_HISTORY_STORE).put(history, "all");
+    } catch(e2) { console.error("History save failed:", e2); }
+  }
+}
+
+async function archiveCurrentSurvey() {
+  // Only archive if there's meaningful data
+  if (!state.storeNumber && !state.findings.length && !state.otherIssues.length) return;
+  const history = await loadHistory();
+  // Strip photos to save space — keep only counts
+  const archived = {
+    id: uid(),
+    storeNumber: state.storeNumber,
+    storeName: state.storeName,
+    surveyDate: state.surveyDate,
+    surveyorName: state.surveyorName,
+    findingsCount: state.findings.length,
+    otherIssuesCount: state.otherIssues.length,
+    photoCount: state.findings.reduce((a,f) => a + f.photoPreviews.length, 0)
+      + state.otherIssues.reduce((a,iss) => a + iss.photos.length, 0),
+    findingsSummary: state.findings.map(f => ({
+      rackingType: f.rackingType,
+      customRackingType: f.customRackingType || "",
+      partType: f.partType,
+      location: f.location,
+      quantity: f.quantity,
+      description: f.description,
+    })),
+    otherIssuesSummary: state.otherIssues.map(iss => iss.text),
+    archivedAt: new Date().toISOString(),
+  };
+  history.unshift(archived);
+  // Keep max 50 surveys
+  if (history.length > 50) history.length = 50;
+  await saveHistory(history);
+}
+
+function renderHistory() {
+  loadHistory().then(history => {
+    const list = document.getElementById("history-list"); list.innerHTML = "";
+    if (history.length === 0) {
+      list.innerHTML = '<div class="empty"><div class="icon">📂</div><div>No survey history yet</div><div class="hint">Completed surveys will appear here</div></div>';
+      return;
+    }
+    history.forEach((h, i) => {
+      const card = document.createElement("div"); card.className = "history-card";
+      const date = h.surveyDate || (h.archivedAt ? new Date(h.archivedAt).toLocaleDateString() : "Unknown");
+      let html = `<div class="hc-store">Store #${esc(h.storeNumber)} — ${esc(h.storeName)}</div>`;
+      html += `<div class="hc-detail">`;
+      html += `Date: ${esc(date)} · Surveyor: ${esc(h.surveyorName || "—")}<br>`;
+      html += `${h.findingsCount || 0} racking items · ${h.otherIssuesCount || 0} other issues · ${h.photoCount || 0} photos`;
+      if (h.findingsSummary && h.findingsSummary.length > 0) {
+        html += `<br><span style="color:var(--text-faint)">`;
+        html += h.findingsSummary.slice(0,3).map(f => {
+          const label = f.rackingType === "Other" && f.customRackingType ? f.customRackingType : f.rackingType;
+          return label + (f.partType ? ` (${f.partType})` : "");
+        }).join(", ");
+        if (h.findingsSummary.length > 3) html += ` +${h.findingsSummary.length - 3} more`;
+        html += `</span>`;
+      }
+      html += `</div>`;
+      html += `<div class="hc-actions"></div>`;
+      card.innerHTML = html;
+      const actions = card.querySelector(".hc-actions");
+      const delBtn = document.createElement("button"); delBtn.className = "btn-ghost danger"; delBtn.textContent = "Delete";
+      delBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        if (!confirm(`Delete history for Store #${h.storeNumber}?`)) return;
+        history.splice(i, 1);
+        await saveHistory(history);
+        renderHistory();
+      });
+      actions.appendChild(delBtn);
+      list.appendChild(card);
+    });
+  });
+}
+
+document.getElementById("btn-view-history").addEventListener("click", () => {
+  renderHistory();
+  document.getElementById("history-overlay").classList.add("open");
+});
+document.getElementById("btn-view-history-header").addEventListener("click", () => {
+  renderHistory();
+  document.getElementById("history-overlay").classList.add("open");
+});
+document.getElementById("btn-close-history").addEventListener("click", () => {
+  document.getElementById("history-overlay").classList.remove("open");
+});
+document.getElementById("history-overlay").addEventListener("click", (e) => {
+  if (e.target === document.getElementById("history-overlay")) {
+    document.getElementById("history-overlay").classList.remove("open");
+  }
+});
+
+// NEW SURVEY — archives current before clearing
+document.getElementById("btn-new-survey").addEventListener("click", async () => {
+  if (!confirm("Start a new survey? Current data will be archived to history.")) return;
+  await archiveCurrentSurvey();
   clearSavedState();
   state.storeNumber = ""; state.storeName = "";
   state.surveyDate = new Date().toISOString().split("T")[0];

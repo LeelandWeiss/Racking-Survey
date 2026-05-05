@@ -88,21 +88,21 @@
   }
   .nav-btn {
     flex: 1;
-    padding: 8px 2px 6px;
+    padding: 8px 1px 6px;
     background: transparent;
     border: none;
     border-top: 2px solid transparent;
     color: rgba(255,255,255,0.45);
     font-size: 9px;
     font-family: var(--font-mono);
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     text-transform: uppercase;
     cursor: pointer;
     text-align: center;
     transition: all 0.15s;
   }
   .nav-btn.active { background: var(--primary); border-top-color: var(--accent); color: var(--accent); }
-  .nav-btn .icon { font-size: 17px; margin-bottom: 2px; }
+  .nav-btn .icon { font-size: 16px; margin-bottom: 2px; }
   .view { display: none; }
   .view.active { display: block; }
   .body-pad { padding: 16px; }
@@ -265,6 +265,33 @@
     padding: 4px 10px; border-radius: 3px; cursor: pointer; margin-top: 8px;
     letter-spacing: 0.5px;
   }
+  .history-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 14px; margin-bottom: 12px;
+  }
+  .history-card .hc-store {
+    font-family: var(--font-display); font-size: 16px; font-weight: 700;
+    color: var(--primary); letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .history-card .hc-meta {
+    font-size: 11px; color: var(--text-dim); margin-top: 4px; line-height: 1.6;
+  }
+  .history-card .hc-stats {
+    display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap;
+  }
+  .history-card .hc-stat {
+    font-size: 11px; color: var(--text-desc); background: var(--surface-alt);
+    padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border-light);
+  }
+  .history-card .hc-stat strong { color: var(--primary); font-weight: 700; }
+  .history-card .hc-actions { display: flex; gap: 8px; margin-top: 12px; }
+  .history-card .hc-actions .btn-ghost { flex: 1; }
+  .storage-info {
+    font-size: 11px; color: var(--text-ghost); text-align: center;
+    margin-top: 16px; padding: 10px; background: var(--surface-alt);
+    border-radius: 4px; border: 1px solid var(--border-light); line-height: 1.6;
+  }
+  .storage-info strong { color: var(--primary); }
   .progress-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000;
     display: none; align-items: center; justify-content: center; flex-direction: column; gap: 16px;
@@ -394,6 +421,18 @@
   </div>
 </div>
 
+<!-- HISTORY -->
+<div id="view-history" class="view">
+  <div class="body-pad">
+    <div class="section-title">Past Surveys</div>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:14px;line-height:1.6">
+      Surveys are archived here when you tap "Start New Survey." Tap any to reopen — photos and all items are restored. Up to 10 surveys are kept; older ones are removed automatically.
+    </p>
+    <div id="history-list"></div>
+    <div class="storage-info" id="storage-info"></div>
+  </div>
+</div>
+
 <!-- Photo Modal -->
 <div class="modal-overlay" id="photo-modal">
   <img id="modal-img" src="" alt="Full size">
@@ -409,10 +448,11 @@
 <!-- Bottom Nav -->
 <div class="bottom-nav">
   <button class="nav-btn active" data-view="header"><div class="icon">🏪</div>Store</button>
-  <button class="nav-btn" data-view="addFinding"><div class="icon">➕</div>Add Item</button>
+  <button class="nav-btn" data-view="addFinding"><div class="icon">➕</div>Add</button>
   <button class="nav-btn" data-view="review"><div class="icon">📋</div><span id="nav-review-label">Review (0)</span></button>
   <button class="nav-btn" data-view="other"><div class="icon">⚠️</div>Other</button>
   <button class="nav-btn" data-view="export"><div class="icon">📤</div>Export</button>
+  <button class="nav-btn" data-view="history"><div class="icon">📚</div>History</button>
 </div>
 
 <script>
@@ -493,6 +533,52 @@ async function idbClear() {
     const tx = db.transaction(IDB_STORE, "readwrite");
     tx.objectStore(IDB_STORE).delete("current");
   } catch(e) {}
+}
+
+// ── History (archived surveys) IDB helpers ──
+const HISTORY_PREFIX = "history:";
+const HISTORY_LIMIT = 10;
+
+async function idbSaveHistoryEntry(entry) {
+  const db = await openIDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, "readwrite");
+    tx.objectStore(IDB_STORE).put(entry, HISTORY_PREFIX + entry.id);
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function idbLoadAllHistory() {
+  const db = await openIDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, "readonly");
+    const store = tx.objectStore(IDB_STORE);
+    const results = [];
+    const req = store.openCursor();
+    req.onsuccess = (e) => {
+      const cursor = e.target.result;
+      if (cursor) {
+        if (typeof cursor.key === "string" && cursor.key.indexOf(HISTORY_PREFIX) === 0) {
+          results.push(cursor.value);
+        }
+        cursor.continue();
+      } else {
+        // Newest first
+        results.sort((a, b) => new Date(b.archivedAt || 0).getTime() - new Date(a.archivedAt || 0).getTime());
+        resolve(results);
+      }
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+async function idbDeleteHistoryEntry(id) {
+  const db = await openIDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, "readwrite");
+    tx.objectStore(IDB_STORE).delete(HISTORY_PREFIX + id);
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => reject(tx.error);
+  });
 }
 
 function buildSaveData() {
@@ -621,7 +707,7 @@ RACKING_TYPES.forEach(t => {
 });
 
 // NAV
-const views = ["header","addFinding","review","other","export"];
+const views = ["header","addFinding","review","other","export","history"];
 const navBtns = document.querySelectorAll(".nav-btn");
 function showView(name) {
   views.forEach(v => document.getElementById("view-"+v).classList.toggle("active", v===name));
@@ -630,6 +716,7 @@ function showView(name) {
   if (name==="export") renderExport();
   if (name==="other") renderOtherIssues();
   if (name==="addFinding") { renderPills(); validateFinding(); }
+  if (name==="history") renderHistory();
 }
 navBtns.forEach(b => {
   b.addEventListener("click", () => {
@@ -1127,18 +1214,151 @@ function getImageDims(dataUrl) {
 }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// NEW SURVEY
-document.getElementById("btn-new-survey").addEventListener("click", () => {
-  if (!confirm("Start a new survey? Current data will be cleared.")) return;
+// NEW SURVEY (archives current to history first)
+document.getElementById("btn-new-survey").addEventListener("click", async () => {
+  const hasData = state.storeNumber || state.storeName || state.findings.length > 0 || state.otherIssues.length > 0;
+  let prompt = "Start a new survey?";
+  if (hasData) prompt = "Save current survey to History and start a new one?";
+  if (!confirm(prompt)) return;
+  if (hasData) {
+    try { await archiveCurrentSurvey(); }
+    catch(e) { console.warn("Archive failed:", e); if (!confirm("Couldn't save to history — start new anyway?")) return; }
+  }
   clearSavedState();
+  resetCurrentSurvey();
+  showView("header");
+});
+
+function resetCurrentSurvey() {
   state.storeNumber = ""; state.storeName = "";
   state.surveyDate = new Date().toISOString().split("T")[0];
   state.surveyorName = ""; state.findings = []; state.otherIssues = [];
   state.editingIndex = null; currentFinding = freshFinding(); currentOtherPhotos = [];
   ["storeNumber","storeName","surveyorName"].forEach(id => document.getElementById(id).value = "");
   document.getElementById("surveyDate").value = state.surveyDate;
-  updateNavCount(); showView("header");
-});
+  document.getElementById("otherIssueText").value = "";
+  renderOtherPhotos();
+  updateNavCount();
+}
+
+async function archiveCurrentSurvey() {
+  const entry = {
+    id: uid(),
+    storeNumber: state.storeNumber,
+    storeName: state.storeName,
+    surveyDate: state.surveyDate,
+    surveyorName: state.surveyorName,
+    findings: state.findings,
+    otherIssues: state.otherIssues,
+    archivedAt: new Date().toISOString(),
+  };
+  await idbSaveHistoryEntry(entry);
+  // Auto-prune oldest if over the limit
+  const all = await idbLoadAllHistory();
+  if (all.length > HISTORY_LIMIT) {
+    const toRemove = all.slice(HISTORY_LIMIT); // oldest entries (sorted newest-first)
+    for (const old of toRemove) {
+      await idbDeleteHistoryEntry(old.id);
+    }
+  }
+}
+
+// HISTORY VIEW
+async function renderHistory() {
+  const list = document.getElementById("history-list");
+  const info = document.getElementById("storage-info");
+  list.innerHTML = '<div class="empty"><div style="font-size:11px;color:var(--text-ghost)">Loading…</div></div>';
+  info.innerHTML = "";
+
+  let entries = [];
+  try { entries = await idbLoadAllHistory(); }
+  catch(e) { list.innerHTML = '<div class="empty"><div>Could not load history</div></div>'; return; }
+
+  if (entries.length === 0) {
+    list.innerHTML = '<div class="empty"><div class="icon">📚</div><div>No archived surveys yet</div><div class="hint">Complete a survey, then tap "Start New Survey" on the Export tab to archive it here.</div></div>';
+    return;
+  }
+
+  list.innerHTML = "";
+  let totalBytes = 0;
+  entries.forEach(entry => {
+    const photoCount = (entry.findings || []).reduce((a,f) => a + (f.photoPreviews?.length || 0), 0)
+      + (entry.otherIssues || []).reduce((a,iss) => a + (iss.photos?.length || 0), 0);
+    const itemCount = (entry.findings || []).length;
+    const issueCount = (entry.otherIssues || []).length;
+    const archived = entry.archivedAt ? new Date(entry.archivedAt) : null;
+    const archivedStr = archived ? `${archived.toLocaleDateString()} ${archived.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}` : "";
+    // Rough byte estimate (data URLs are base64, ~1.37x raw)
+    const approxBytes = JSON.stringify(entry).length;
+    totalBytes += approxBytes;
+
+    const card = document.createElement("div");
+    card.className = "history-card";
+    card.innerHTML = `
+      <div class="hc-store">#${esc(entry.storeNumber || "—")} — ${esc(entry.storeName || "Unnamed")}</div>
+      <div class="hc-meta">
+        Surveyed ${esc(entry.surveyDate || "—")} by ${esc(entry.surveyorName || "—")}<br>
+        Archived ${esc(archivedStr)}
+      </div>
+      <div class="hc-stats">
+        <span class="hc-stat"><strong>${itemCount}</strong> racking item${itemCount!==1?"s":""}</span>
+        <span class="hc-stat"><strong>${issueCount}</strong> other issue${issueCount!==1?"s":""}</span>
+        <span class="hc-stat"><strong>${photoCount}</strong> photo${photoCount!==1?"s":""}</span>
+      </div>
+      <div class="hc-actions">
+        <button class="btn-ghost" data-action="open">Open</button>
+        <button class="btn-ghost danger" data-action="delete">Delete</button>
+      </div>
+    `;
+    card.querySelector('[data-action="open"]').addEventListener("click", () => openHistoryEntry(entry));
+    card.querySelector('[data-action="delete"]').addEventListener("click", () => deleteHistoryEntry(entry));
+    list.appendChild(card);
+  });
+
+  const mb = (totalBytes / (1024 * 1024)).toFixed(1);
+  info.innerHTML = `<strong>${entries.length}</strong> survey${entries.length!==1?"s":""} stored — ~<strong>${mb} MB</strong> on this device<br>Up to ${HISTORY_LIMIT} surveys are kept; oldest auto-removed`;
+}
+
+async function openHistoryEntry(entry) {
+  const currentHasData = state.storeNumber || state.storeName || state.findings.length > 0 || state.otherIssues.length > 0;
+  if (currentHasData) {
+    if (!confirm(`Open archived survey for #${entry.storeNumber} ${entry.storeName}?\n\nYour current in-progress survey will be saved to History first.`)) return;
+    try { await archiveCurrentSurvey(); } catch(e) { console.warn("Archive failed:", e); }
+  }
+  // Load entry into state
+  state.storeNumber = entry.storeNumber || "";
+  state.storeName = entry.storeName || "";
+  state.surveyDate = entry.surveyDate || new Date().toISOString().split("T")[0];
+  state.surveyorName = entry.surveyorName || "";
+  state.findings = (entry.findings || []).map(f => ({ ...f, photoPreviews: f.photoPreviews || [] }));
+  state.otherIssues = (entry.otherIssues || []).map(i => ({ ...i, photos: i.photos || [] }));
+  state.editingIndex = null;
+  currentFinding = freshFinding();
+  currentOtherPhotos = [];
+
+  // Update form fields
+  document.getElementById("storeNumber").value = state.storeNumber;
+  document.getElementById("storeName").value = state.storeName;
+  document.getElementById("surveyDate").value = state.surveyDate;
+  document.getElementById("surveyorName").value = state.surveyorName;
+  document.getElementById("otherIssueText").value = "";
+  renderOtherPhotos();
+  updateNavCount();
+
+  // Remove the now-loaded entry from history (it becomes the current draft)
+  try { await idbDeleteHistoryEntry(entry.id); } catch(e) {}
+
+  // Persist as current and jump to Review
+  saveState();
+  showView(state.findings.length > 0 ? "review" : "header");
+}
+
+async function deleteHistoryEntry(entry) {
+  if (!confirm(`Delete archived survey for #${entry.storeNumber} ${entry.storeName}?\n\nThis cannot be undone.`)) return;
+  try { await idbDeleteHistoryEntry(entry.id); }
+  catch(e) { alert("Could not delete — try again."); return; }
+  renderHistory();
+}
 
 // MODAL
 function openModal(src) { document.getElementById("modal-img").src = src; document.getElementById("photo-modal").classList.add("open"); }

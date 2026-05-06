@@ -406,8 +406,8 @@
     <div class="section-title">Export to FEXA</div>
     <div class="card export-ready" id="export-summary"></div>
     <button class="btn-pdf" id="btn-pdf">📄&nbsp;&nbsp;Download PDF Report with Photos</button>
-    <div style="font-size:11px;color:var(--text-ghost);text-align:center;margin-top:8px">
-      Full report with all photos embedded — attach to FEXA work order
+    <div style="font-size:11px;color:var(--text-ghost);text-align:center;margin-top:8px;line-height:1.6">
+      Generates one PDF for racking and a separate PDF for other facility issues — one per FEXA work order
     </div>
     <button class="btn-outline" id="btn-copy">📋&nbsp;&nbsp;Copy Text Report to Clipboard</button>
     <div style="font-size:11px;color:var(--text-ghost);text-align:center;margin-top:8px">
@@ -959,9 +959,33 @@ document.getElementById("btn-copy").addEventListener("click", async () => {
 // ══════════════════════════════════════════
 // PDF GENERATION
 // ══════════════════════════════════════════
-document.getElementById("btn-pdf").addEventListener("click", generatePDF);
+document.getElementById("btn-pdf").addEventListener("click", handleDownloadPDFs);
 
-async function generatePDF() {
+async function handleDownloadPDFs() {
+  const hasRacking = state.findings.length > 0;
+  const hasOther = state.otherIssues.length > 0;
+  if (!hasRacking && !hasOther) {
+    alert("Add at least one racking item or other issue before downloading.");
+    return;
+  }
+  if (hasRacking && hasOther) {
+    // Two separate PDFs — one for each FEXA work order
+    await generatePDF("racking");
+    await sleep(500); // brief pause so browser starts the first download cleanly before the second
+    await generatePDF("other");
+  } else if (hasRacking) {
+    await generatePDF("racking");
+  } else {
+    await generatePDF("other");
+  }
+}
+
+async function generatePDF(mode) {
+  const includeRacking = (mode === "racking" || mode === "all");
+  const includeOther = (mode === "other" || mode === "all");
+  const reportTitle = (mode === "other") ? "FACILITY ISSUES REPORT" : "RACKING SURVEY REPORT";
+  const fileLabel = (mode === "other") ? "Facility_Issues" : "Racking_Survey";
+  const footerLabel = (mode === "other") ? "McCoys Facility Issues" : "McCoys Racking Survey";
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "letter" });
   const pw = 215.9, ph = 279.4;
@@ -974,9 +998,9 @@ async function generatePDF() {
   const ptext = document.getElementById("pdf-progress-text");
   progress.classList.add("open");
 
-  // Count total photos for progress
-  let totalPhotos = state.findings.reduce((a,f) => a + f.photoPreviews.length, 0)
-    + state.otherIssues.reduce((a,iss) => a + iss.photos.length, 0);
+  // Count total photos for progress (only for sections being included)
+  let totalPhotos = (includeRacking ? state.findings.reduce((a,f) => a + f.photoPreviews.length, 0) : 0)
+    + (includeOther ? state.otherIssues.reduce((a,iss) => a + iss.photos.length, 0) : 0);
   let photosProcessed = 0;
 
   function updateProgress(msg, pct) {
@@ -1011,7 +1035,7 @@ async function generatePDF() {
     doc.text("McCOYS BUILDING SUPPLY", ml, 12);
     doc.setFontSize(11);
     doc.setTextColor(255);
-    doc.text("RACKING SURVEY REPORT", ml, 20);
+    doc.text(reportTitle, ml, 20);
     doc.setFontSize(8);
     doc.setTextColor(255, 214, 0);
     doc.text("Construction & Maintenance", ml, 25);
@@ -1032,10 +1056,10 @@ async function generatePDF() {
       ["Store:", `#${state.storeNumber} — ${state.storeName}`],
       ["Date:", state.surveyDate],
       ["Surveyor:", state.surveyorName],
-      ["Racking Items:", String(state.findings.length)],
-      ["Other Issues:", String(state.otherIssues.length)],
+      includeRacking && ["Racking Items:", String(state.findings.length)],
+      includeOther && ["Other Issues:", String(state.otherIssues.length)],
       ["Total Photos:", String(totalPhotos)],
-    ];
+    ].filter(Boolean);
     info.forEach(([lbl, val]) => {
       doc.setFont("helvetica", "bold"); doc.text(lbl, ml, y);
       doc.setFont("helvetica", "normal"); doc.text(val, ml + 30, y);
@@ -1044,6 +1068,7 @@ async function generatePDF() {
     y += 5;
 
     // ── FINDINGS ──
+    if (includeRacking) {
     updateProgress("Adding findings...", 10);
     await sleep(50);
 
@@ -1117,9 +1142,10 @@ async function generatePDF() {
       }
       y += 4;
     }
+    } // end if (includeRacking)
 
     // ── OTHER ISSUES ──
-    if (state.otherIssues.length > 0) {
+    if (includeOther && state.otherIssues.length > 0) {
       updateProgress("Adding other issues...", 90);
       checkPage(20);
 
@@ -1184,14 +1210,14 @@ async function generatePDF() {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(7);
       doc.setTextColor(150);
-      doc.text(`McCoys Racking Survey — Store #${state.storeNumber} — ${state.surveyDate}`, ml, ph - 8);
+      doc.text(`${footerLabel} — Store #${state.storeNumber} — ${state.surveyDate}`, ml, ph - 8);
       doc.text(`Page ${p} of ${pageCount}`, pw - mr - 20, ph - 8);
     }
 
     updateProgress("Saving PDF...", 98);
     await sleep(100);
 
-    const filename = `McCoys_Racking_Survey_Store${state.storeNumber}_${state.surveyDate}.pdf`;
+    const filename = `McCoys_${fileLabel}_Store${state.storeNumber}_${state.surveyDate}.pdf`;
     doc.save(filename);
 
     updateProgress("Done!", 100);

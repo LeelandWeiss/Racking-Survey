@@ -463,9 +463,10 @@ const state = {
 };
 let currentFinding = freshFinding();
 let currentOtherPhotos = [];
+let currentOtherPhotoIds = [];
 
 function freshFinding() {
-  return { id: uid(), rackingType: "", partType: "", partDimensions: "", location: "", quantity: "", description: "", photoPreviews: [] };
+  return { id: uid(), rackingType: "", partType: "", partDimensions: "", location: "", quantity: "", description: "", photoPreviews: [], photoIds: [] };
 }
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 
@@ -535,6 +536,44 @@ async function idbClear() {
   } catch(e) {}
 }
 
+// ── Per-photo IDB storage (so the main save payload stays tiny) ──
+const PHOTO_PREFIX = "photo:";
+
+async function idbSavePhoto(photoId, dataUrl) {
+  const db = await openIDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, "readwrite");
+    tx.objectStore(IDB_STORE).put({ dataUrl }, PHOTO_PREFIX + photoId);
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function idbLoadPhoto(photoId) {
+  const db = await openIDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, "readonly");
+    const req = tx.objectStore(IDB_STORE).get(PHOTO_PREFIX + photoId);
+    req.onsuccess = () => resolve(req.result ? req.result.dataUrl : null);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function idbDeletePhoto(photoId) {
+  try {
+    const db = await openIDB();
+    const tx = db.transaction(IDB_STORE, "readwrite");
+    tx.objectStore(IDB_STORE).delete(PHOTO_PREFIX + photoId);
+  } catch(e) {}
+}
+// Save photo with one retry — single-photo writes are tiny, but iOS Safari
+// can occasionally abort transactions on background, so a quick retry helps.
+async function idbSavePhotoSafe(photoId, dataUrl) {
+  try { await idbSavePhoto(photoId, dataUrl); return true; }
+  catch(e) {
+    try { await new Promise(r => setTimeout(r, 250)); await idbSavePhoto(photoId, dataUrl); return true; }
+    catch(e2) { console.warn("Photo save failed twice:", e2); return false; }
+  }
+}
+
 // ── History (archived surveys) IDB helpers ──
 const HISTORY_PREFIX = "history:";
 const HISTORY_LIMIT = 10;
@@ -582,13 +621,17 @@ async function idbDeleteHistoryEntry(id) {
 }
 
 function buildSaveData() {
+  // Strip the heavy photo data URLs out of the state we persist. Each photo is
+  // saved separately under photo:<id> when it's added, so we only need the IDs
+  // here. This keeps the main save payload at a few KB no matter how big the
+  // survey gets — no more "unable to save" errors.
   return {
     storeNumber: state.storeNumber,
     storeName: state.storeName,
     surveyDate: state.surveyDate,
     surveyorName: state.surveyorName,
-    findings: state.findings,
-    otherIssues: state.otherIssues,
+    findings: state.findings.map(f => ({ ...f, photoPreviews: [], photoIds: f.photoIds || [] })),
+    otherIssues: state.otherIssues.map(i => ({ ...i, photos: [], photoIds: i.photoIds || [] })),
     savedAt: new Date().toISOString(),
   };
 }
@@ -659,6 +702,12 @@ async function loadState() {
     state.findings = data.findings || [];
     state.otherIssues = data.otherIssues || [];
 
+    // Hydrate photos: for each finding/issue, look up photo data URLs by ID.
+    // Also handle legacy data from older versions where photos were embedded
+    // inline (photoPreviews has data URLs but photoIds is empty).
+    await hydratePhotos(state.findings, "photoPreviews");
+    await hydratePhotos(state.otherIssues, "photos");
+
     // Populate form fields
     document.getElementById("storeNumber").value = state.storeNumber;
     document.getElementById("storeName").value = state.storeName;
@@ -687,6 +736,46 @@ async function loadState() {
 function clearSavedState() {
   try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
   idbClear();
+}
+
+// Walk a list of items (findings or otherIssues) and rebuild their photo
+// data-URL arrays from the per-photo IDB records. Legacy items that have
+// data URLs inline but no IDs get migrated on the fly.
+async function hydratePhotos(items, previewField) {
+  for (const item of items) {
+    if (!Array.isArray(item.photoIds)) item.photoIds = [];
+    const inlinePreviews = Array.isArray(item[previewField]) ? item[previewField] : [];
+    const hasInline = inlinePreviews.length > 0;
+    const hasIds = item.photoIds.length > 0;
+
+    if (hasIds) {
+      // Resolve each ID to its data URL. If a photo record went missing for
+      // any reason, skip it gracefully — we don't crash the whole load.
+      const previews = [];
+      const survivingIds = [];
+      for (const pid of item.photoIds) {
+        try {
+          const url = await idbLoadPhoto(pid);
+          if (url) { previews.push(url); survivingIds.push(pid); }
+        } catch(e) {}
+      }
+      item[previewField] = previews;
+      item.photoIds = survivingIds;
+    } else if (hasInline) {
+      // Legacy: photos are embedded as data URLs in the saved state.
+      // Move them into their own IDB records and remember the IDs.
+      const newIds = [];
+      for (const url of inlinePreviews) {
+        const pid = uid();
+        try { await idbSavePhotoSafe(pid, url); newIds.push(pid); }
+        catch(e) { newIds.push(pid); /* keep ID anyway, photo lives in memory for this session */ }
+      }
+      item.photoIds = newIds;
+      item[previewField] = inlinePreviews;
+    } else {
+      item[previewField] = [];
+    }
+  }
 }
 
 // Dismiss restored banner
@@ -765,7 +854,12 @@ document.getElementById("photo-input").addEventListener("change", e => {
     const reader = new FileReader();
     reader.onload = async (ev) => {
       const compressed = await compressPhoto(ev.target.result, 1200, 0.6);
+      const photoId = uid();
       currentFinding.photoPreviews.push(compressed);
+      currentFinding.photoIds.push(photoId);
+      // Save the photo to its own tiny IDB record — this is what keeps the
+      // main state save small (just IDs) no matter how many photos pile up.
+      idbSavePhotoSafe(photoId, compressed);
       renderFindingPhotos();
     };
     reader.readAsDataURL(file);
@@ -780,7 +874,13 @@ function renderFindingPhotos() {
     const img = document.createElement("img"); img.className = "photo-thumb"; img.src = src;
     img.addEventListener("click", () => openModal(src));
     const rm = document.createElement("button"); rm.className = "photo-remove"; rm.textContent = "×";
-    rm.addEventListener("click", () => { currentFinding.photoPreviews.splice(i,1); renderFindingPhotos(); });
+    rm.addEventListener("click", () => {
+      const removedId = currentFinding.photoIds[i];
+      currentFinding.photoPreviews.splice(i,1);
+      currentFinding.photoIds.splice(i,1);
+      if (removedId) idbDeletePhoto(removedId);
+      renderFindingPhotos();
+    });
     wrap.appendChild(img); wrap.appendChild(rm); grid.appendChild(wrap);
   });
 }
@@ -825,7 +925,11 @@ function renderReview() {
     const editBtn = document.createElement("button"); editBtn.className = "btn-ghost"; editBtn.textContent = "Edit";
     editBtn.addEventListener("click", () => { currentFinding = { ...f }; state.editingIndex = i; resetFindingForm(); showView("addFinding"); });
     const delBtn = document.createElement("button"); delBtn.className = "btn-ghost danger"; delBtn.textContent = "Delete";
-    delBtn.addEventListener("click", () => { state.findings.splice(i,1); updateNavCount(); saveState(); renderReview(); });
+    delBtn.addEventListener("click", () => {
+      const removed = state.findings.splice(i,1)[0];
+      if (removed && removed.photoIds) removed.photoIds.forEach(pid => idbDeletePhoto(pid));
+      updateNavCount(); saveState(); renderReview();
+    });
     actions.appendChild(editBtn); actions.appendChild(delBtn); list.appendChild(card);
   });
 }
@@ -844,7 +948,10 @@ document.getElementById("other-photo-input").addEventListener("change", e => {
     const reader = new FileReader();
     reader.onload = async (ev) => {
       const compressed = await compressPhoto(ev.target.result, 1200, 0.6);
+      const photoId = uid();
       currentOtherPhotos.push(compressed);
+      currentOtherPhotoIds.push(photoId);
+      idbSavePhotoSafe(photoId, compressed);
       renderOtherPhotos();
     };
     reader.readAsDataURL(file);
@@ -859,16 +966,23 @@ function renderOtherPhotos() {
     const img = document.createElement("img"); img.className = "photo-thumb"; img.src = src;
     img.addEventListener("click", () => openModal(src));
     const rm = document.createElement("button"); rm.className = "photo-remove"; rm.textContent = "×";
-    rm.addEventListener("click", () => { currentOtherPhotos.splice(i,1); renderOtherPhotos(); });
+    rm.addEventListener("click", () => {
+      const removedId = currentOtherPhotoIds[i];
+      currentOtherPhotos.splice(i,1);
+      currentOtherPhotoIds.splice(i,1);
+      if (removedId) idbDeletePhoto(removedId);
+      renderOtherPhotos();
+    });
     wrap.appendChild(img); wrap.appendChild(rm); grid.appendChild(wrap);
   });
 }
 document.getElementById("btn-save-issue").addEventListener("click", () => {
   const text = document.getElementById("otherIssueText").value.trim();
   if (!text) return;
-  state.otherIssues.push({ id: uid(), text, photos: [...currentOtherPhotos] });
+  state.otherIssues.push({ id: uid(), text, photos: [...currentOtherPhotos], photoIds: [...currentOtherPhotoIds] });
   document.getElementById("otherIssueText").value = "";
   currentOtherPhotos = [];
+  currentOtherPhotoIds = [];
   renderOtherPhotos(); renderOtherIssues(); saveState();
 });
 function renderOtherIssues() {
@@ -891,7 +1005,11 @@ function renderOtherIssues() {
     card.innerHTML = html;
     const actions = card.querySelector(".card-actions");
     const delBtn = document.createElement("button"); delBtn.className = "btn-ghost danger"; delBtn.textContent = "Delete";
-    delBtn.addEventListener("click", () => { state.otherIssues.splice(i,1); renderOtherIssues(); saveState(); });
+    delBtn.addEventListener("click", () => {
+      const removed = state.otherIssues.splice(i,1)[0];
+      if (removed && removed.photoIds) removed.photoIds.forEach(pid => idbDeletePhoto(pid));
+      renderOtherIssues(); saveState();
+    });
     actions.appendChild(delBtn); list.appendChild(card);
   });
 }
@@ -1259,7 +1377,8 @@ function resetCurrentSurvey() {
   state.storeNumber = ""; state.storeName = "";
   state.surveyDate = new Date().toISOString().split("T")[0];
   state.surveyorName = ""; state.findings = []; state.otherIssues = [];
-  state.editingIndex = null; currentFinding = freshFinding(); currentOtherPhotos = [];
+  state.editingIndex = null; currentFinding = freshFinding();
+  currentOtherPhotos = []; currentOtherPhotoIds = [];
   ["storeNumber","storeName","surveyorName"].forEach(id => document.getElementById(id).value = "");
   document.getElementById("surveyDate").value = state.surveyDate;
   document.getElementById("otherIssueText").value = "";
@@ -1268,25 +1387,36 @@ function resetCurrentSurvey() {
 }
 
 async function archiveCurrentSurvey() {
+  // Archive lightweight: keep photoIds, drop the heavy data URLs. The actual
+  // photo records stay in IDB under photo:<id> and are now "owned" by this
+  // history entry (we never copy photo bytes).
   const entry = {
     id: uid(),
     storeNumber: state.storeNumber,
     storeName: state.storeName,
     surveyDate: state.surveyDate,
     surveyorName: state.surveyorName,
-    findings: state.findings,
-    otherIssues: state.otherIssues,
+    findings: state.findings.map(f => ({ ...f, photoPreviews: [], photoIds: f.photoIds || [] })),
+    otherIssues: state.otherIssues.map(i => ({ ...i, photos: [], photoIds: i.photoIds || [] })),
     archivedAt: new Date().toISOString(),
   };
   await idbSaveHistoryEntry(entry);
-  // Auto-prune oldest if over the limit
+  // Auto-prune oldest if over the limit — also delete their photo records.
   const all = await idbLoadAllHistory();
   if (all.length > HISTORY_LIMIT) {
-    const toRemove = all.slice(HISTORY_LIMIT); // oldest entries (sorted newest-first)
+    const toRemove = all.slice(HISTORY_LIMIT);
     for (const old of toRemove) {
-      await idbDeleteHistoryEntry(old.id);
+      await deleteHistoryEntryAndPhotos(old);
     }
   }
+}
+
+async function deleteHistoryEntryAndPhotos(entry) {
+  const ids = [];
+  (entry.findings || []).forEach(f => (f.photoIds || []).forEach(pid => ids.push(pid)));
+  (entry.otherIssues || []).forEach(i => (i.photoIds || []).forEach(pid => ids.push(pid)));
+  for (const pid of ids) { await idbDeletePhoto(pid); }
+  await idbDeleteHistoryEntry(entry.id);
 }
 
 // HISTORY VIEW
@@ -1356,11 +1486,16 @@ async function openHistoryEntry(entry) {
   state.storeName = entry.storeName || "";
   state.surveyDate = entry.surveyDate || new Date().toISOString().split("T")[0];
   state.surveyorName = entry.surveyorName || "";
-  state.findings = (entry.findings || []).map(f => ({ ...f, photoPreviews: f.photoPreviews || [] }));
-  state.otherIssues = (entry.otherIssues || []).map(i => ({ ...i, photos: i.photos || [] }));
+  state.findings = (entry.findings || []).map(f => ({ ...f, photoPreviews: f.photoPreviews || [], photoIds: f.photoIds || [] }));
+  state.otherIssues = (entry.otherIssues || []).map(i => ({ ...i, photos: i.photos || [], photoIds: i.photoIds || [] }));
   state.editingIndex = null;
   currentFinding = freshFinding();
   currentOtherPhotos = [];
+  currentOtherPhotoIds = [];
+
+  // Pull each photo's data URL back from its IDB record
+  await hydratePhotos(state.findings, "photoPreviews");
+  await hydratePhotos(state.otherIssues, "photos");
 
   // Update form fields
   document.getElementById("storeNumber").value = state.storeNumber;
@@ -1371,7 +1506,8 @@ async function openHistoryEntry(entry) {
   renderOtherPhotos();
   updateNavCount();
 
-  // Remove the now-loaded entry from history (it becomes the current draft)
+  // Remove the now-loaded history record (it's the current draft now).
+  // We deliberately DO NOT delete the photo records — they're now owned by current.
   try { await idbDeleteHistoryEntry(entry.id); } catch(e) {}
 
   // Persist as current and jump to Review
@@ -1381,7 +1517,7 @@ async function openHistoryEntry(entry) {
 
 async function deleteHistoryEntry(entry) {
   if (!confirm(`Delete archived survey for #${entry.storeNumber} ${entry.storeName}?\n\nThis cannot be undone.`)) return;
-  try { await idbDeleteHistoryEntry(entry.id); }
+  try { await deleteHistoryEntryAndPhotos(entry); }
   catch(e) { alert("Could not delete — try again."); return; }
   renderHistory();
 }

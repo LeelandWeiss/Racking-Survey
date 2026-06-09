@@ -41,138 +41,33 @@
     --font-display: 'Oswald', 'Impact', sans-serif;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body {
-    font-family: var(--font-mono);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    min-height: 100dvh;
-    max-width: 600px;
-    margin: 0 auto;
-    padding-bottom: 68px;
-    -webkit-font-smoothing: antialiased;
-  }
-  .top-bar {
-    background: var(--primary);
-    padding: 14px 18px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .top-bar h1 {
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--accent);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    line-height: 1.1;
-  }
-  .top-bar .sub {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: rgba(255,255,255,0.7);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-top: 2px;
-  }
-  .bottom-nav {
-    display: flex;
-    background: var(--primary-dark);
-    border-top: 1px solid rgba(255,255,255,0.1);
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    max-width: 600px;
-    margin: 0 auto;
-    z-index: 100;
-  }
-  .nav-btn {
-    flex: 1;
-    padding: 8px 1px 6px;
-    background: transparent;
-    border: none;
-    border-top: 2px solid transparent;
-    color: rgba(255,255,255,0.45);
-    font-size: 9px;
-    font-family: var(--font-mono);
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.15s;
-  }
+  body { font-family: var(--font-mono); background: var(--bg); color: var(--text); min-height: 100vh; min-height: 100dvh; max-width: 600px; margin: 0 auto; padding-bottom: 68px; -webkit-font-smoothing: antialiased; }
+  .top-bar { background: var(--primary); padding: 14px 18px; position: sticky; top: 0; z-index: 100; }
+  .top-bar h1 { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; line-height: 1.1; }
+  .top-bar .sub { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.7); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+  .bottom-nav { display: flex; background: var(--primary-dark); border-top: 1px solid rgba(255,255,255,0.1); position: fixed; bottom: 0; left: 0; right: 0; max-width: 600px; margin: 0 auto; z-index: 100; }
+  .nav-btn { flex: 1; padding: 8px 1px 6px; background: transparent; border: none; border-top: 2px solid transparent; color: rgba(255,255,255,0.45); font-size: 9px; font-family: var(--font-mono); letter-spacing: 0.3px; text-transform: uppercase; cursor: pointer; text-align: center; transition: all 0.15s; }
   .nav-btn.active { background: var(--primary); border-top-color: var(--accent); color: var(--accent); }
   .nav-btn .icon { font-size: 16px; margin-bottom: 2px; }
   .view { display: none; }
   .view.active { display: block; }
   .body-pad { padding: 16px; }
-  .section-title {
-    font-family: var(--font-display);
-    font-size: 13px;
-    color: var(--primary);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    border-bottom: 2px solid var(--accent);
-    padding-bottom: 6px;
-  }
-  label.field-label {
-    display: block;
-    font-size: 11px;
-    color: var(--text-dimmer);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-    margin-top: 14px;
-  }
-  input.field, textarea.field {
-    width: 100%;
-    background: #fff;
-    border: 1px solid var(--border-light);
-    color: var(--text);
-    padding: 12px;
-    font-size: 16px;
-    font-family: var(--font-mono);
-    border-radius: 4px;
-    outline: none;
-    transition: border-color 0.15s;
-  }
+  .section-title { font-family: var(--font-display); font-size: 13px; color: var(--primary); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px; border-bottom: 2px solid var(--accent); padding-bottom: 6px; }
+  label.field-label { display: block; font-size: 11px; color: var(--text-dimmer); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; margin-top: 14px; }
+  input.field, textarea.field { width: 100%; background: #fff; border: 1px solid var(--border-light); color: var(--text); padding: 12px; font-size: 16px; font-family: var(--font-mono); border-radius: 4px; outline: none; transition: border-color 0.15s; }
   input.field:focus, textarea.field:focus { border-color: var(--primary); }
   textarea.field { font-size: 14px; min-height: 80px; resize: vertical; }
   .pill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
-  .pill {
-    padding: 12px 18px; border-radius: 4px; border: 1px solid var(--border-mid);
-    background: var(--surface); color: var(--text-dim); font-size: 14px;
-    font-family: var(--font-mono); cursor: pointer; font-weight: 400;
-    text-align: center; transition: all 0.15s; user-select: none; -webkit-user-select: none;
-  }
+  .pill { padding: 12px 18px; border-radius: 4px; border: 1px solid var(--border-mid); background: var(--surface); color: var(--text-dim); font-size: 14px; font-family: var(--font-mono); cursor: pointer; font-weight: 400; text-align: center; transition: all 0.15s; user-select: none; -webkit-user-select: none; }
   .pill.active { border: 2px solid var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 700; }
-  .btn-primary {
-    width: 100%; padding: 16px; background: var(--primary); color: var(--accent); border: none;
-    font-size: 14px; font-family: var(--font-display); font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase; border-radius: 4px;
-    cursor: pointer; margin-top: 20px; transition: opacity 0.15s;
-  }
+  .btn-primary { width: 100%; padding: 16px; background: var(--primary); color: var(--accent); border: none; font-size: 14px; font-family: var(--font-display); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; border-radius: 4px; cursor: pointer; margin-top: 20px; transition: opacity 0.15s; }
   .btn-primary:disabled { opacity: 0.4; }
   .btn-primary:active:not(:disabled) { opacity: 0.8; }
-  .btn-outline {
-    width: 100%; padding: 14px; background: transparent; color: var(--primary);
-    border: 2px solid var(--primary); font-size: 13px; font-family: var(--font-display);
-    font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-    border-radius: 4px; cursor: pointer; margin-top: 10px;
-  }
-  .btn-ghost {
-    padding: 10px 16px; background: transparent; color: var(--text-desc);
-    border: 1px solid var(--border-mid); font-size: 11px; font-family: var(--font-mono);
-    letter-spacing: 1px; text-transform: uppercase; border-radius: 3px; cursor: pointer;
-    transition: all 0.15s;
-  }
+  .btn-outline { width: 100%; padding: 14px; background: transparent; color: var(--primary); border: 2px solid var(--primary); font-size: 13px; font-family: var(--font-display); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+  .btn-ghost { padding: 10px 16px; background: transparent; color: var(--text-desc); border: 1px solid var(--border-mid); font-size: 11px; font-family: var(--font-mono); letter-spacing: 1px; text-transform: uppercase; border-radius: 3px; cursor: pointer; transition: all 0.15s; }
   .btn-ghost:active { background: rgba(0,0,0,0.05); }
   .btn-ghost.danger { color: #c62828; border-color: #c62828; }
-  .card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 6px; padding: 14px; margin-bottom: 12px;
-  }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px; margin-bottom: 12px; }
   .card-title { font-size: 14px; font-weight: 700; color: var(--text-card); margin-bottom: 8px; }
   .card-detail { font-size: 12px; color: var(--text-dim); line-height: 1.8; }
   .card-detail .lbl { color: var(--text-ghost); }
@@ -180,137 +75,62 @@
   .card-actions { display: flex; gap: 8px; margin-top: 10px; }
   .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
   .photo-wrap { position: relative; }
-  .photo-thumb {
-    width: 100%; aspect-ratio: 1; object-fit: cover;
-    border-radius: 4px; border: 1px solid var(--border-mid); cursor: pointer;
-  }
-  .photo-remove {
-    position: absolute; top: 2px; right: 2px; background: #c62828; color: #fff;
-    border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 13px;
-    cursor: pointer; line-height: 20px; text-align: center;
-  }
+  .photo-thumb { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-mid); cursor: pointer; }
+  .photo-remove { position: absolute; top: 2px; right: 2px; background: #c62828; color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 13px; cursor: pointer; line-height: 20px; text-align: center; }
   .photo-row { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
-  .photo-row img {
-    width: 48px; height: 48px; object-fit: cover; border-radius: 3px;
-    border: 1px solid var(--border-mid); cursor: pointer;
-  }
-  .counter-bar {
-    text-align: center; padding: 16px; background: var(--primary);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-  }
+  .photo-row img { width: 48px; height: 48px; object-fit: cover; border-radius: 3px; border: 1px solid var(--border-mid); cursor: pointer; }
+  .counter-bar { text-align: center; padding: 16px; background: var(--primary); border-bottom: 1px solid rgba(255,255,255,0.1); }
   .counter-num { font-family: var(--font-display); font-size: 32px; font-weight: 700; color: var(--accent); }
   .counter-label { font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.7); text-transform: uppercase; }
   .export-ready { background: var(--green-bg); border-color: var(--green-border); }
   .export-ready .title { font-size: 13px; font-weight: 700; color: var(--green-title); margin-bottom: 6px; }
   .export-ready .detail { font-size: 12px; color: var(--green-text); line-height: 1.6; }
-  .report-preview {
-    background: #f0ede5; border: 1px solid var(--border); border-radius: 6px; padding: 14px;
-    font-size: 11px; color: var(--text); white-space: pre-wrap; word-break: break-word;
-    line-height: 1.5; max-height: 400px; overflow-y: auto; font-family: var(--font-mono);
-  }
-  .photo-reminder {
-    margin-top: 20px; padding: 14px; background: var(--surface-alt);
-    border-radius: 6px; border-left: 3px solid var(--primary);
-  }
-  .photo-reminder .title { font-size: 12px; font-weight: 700; color: var(--text-card); margin-bottom: 6px; }
-  .photo-reminder .detail { font-size: 11px; color: var(--text-dimmer); line-height: 1.6; }
+  .report-preview { background: #f0ede5; border: 1px solid var(--border); border-radius: 6px; padding: 14px; font-size: 11px; color: var(--text); white-space: pre-wrap; word-break: break-word; line-height: 1.5; max-height: 400px; overflow-y: auto; font-family: var(--font-mono); }
   .empty { text-align: center; padding: 40px 0; color: var(--text-muted); }
   .empty .icon { font-size: 36px; margin-bottom: 8px; }
   .empty .hint { font-size: 12px; margin-top: 4px; }
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 1000;
-    display: none; align-items: center; justify-content: center; padding: 20px;
-  }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
   .modal-overlay.open { display: flex; }
   .modal-overlay img { max-width: 100%; max-height: 100%; border-radius: 4px; }
-  .modal-close {
-    position: absolute; top: 16px; right: 16px; background: var(--accent); color: var(--primary);
-    border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 20px; cursor: pointer;
-  }
-  .autosave-toast {
-    position: fixed;
-    top: 52px;
-    right: 10px;
-    background: rgba(46,125,50,0.92);
-    color: #fff;
-    font-size: 10px;
-    font-family: var(--font-mono);
-    letter-spacing: 1px;
-    padding: 5px 12px;
-    border-radius: 3px;
-    z-index: 200;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-  }
+  .modal-close { position: absolute; top: 16px; right: 16px; background: var(--accent); color: var(--primary); border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 20px; cursor: pointer; }
+  .autosave-toast { position: fixed; top: 52px; right: 10px; background: rgba(46,125,50,0.92); color: #fff; font-size: 10px; font-family: var(--font-mono); letter-spacing: 1px; padding: 5px 12px; border-radius: 3px; z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
   .autosave-toast.show { opacity: 1; }
-  .restored-banner {
-    background: rgba(21,101,192,0.15);
-    border: 1px solid rgba(21,101,192,0.3);
-    border-radius: 6px;
-    padding: 12px 14px;
-    margin-bottom: 14px;
-    display: none;
-  }
+  .restored-banner { background: rgba(21,101,192,0.15); border: 1px solid rgba(21,101,192,0.3); border-radius: 6px; padding: 12px 14px; margin-bottom: 14px; display: none; }
   .restored-banner.show { display: block; }
-  .restored-banner .rb-title {
-    font-size: 12px; font-weight: 700; color: #64B5F6; margin-bottom: 4px;
-  }
-  .restored-banner .rb-detail {
-    font-size: 11px; color: #90CAF9; line-height: 1.5;
-  }
-  .restored-banner .rb-dismiss {
-    background: transparent; border: 1px solid rgba(100,181,246,0.4);
-    color: #64B5F6; font-size: 10px; font-family: var(--font-mono);
-    padding: 4px 10px; border-radius: 3px; cursor: pointer; margin-top: 8px;
-    letter-spacing: 0.5px;
-  }
-  .history-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 6px; padding: 14px; margin-bottom: 12px;
-  }
-  .history-card .hc-store {
-    font-family: var(--font-display); font-size: 16px; font-weight: 700;
-    color: var(--primary); letter-spacing: 0.5px; text-transform: uppercase;
-  }
-  .history-card .hc-meta {
-    font-size: 11px; color: var(--text-dim); margin-top: 4px; line-height: 1.6;
-  }
-  .history-card .hc-stats {
-    display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap;
-  }
-  .history-card .hc-stat {
-    font-size: 11px; color: var(--text-desc); background: var(--surface-alt);
-    padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border-light);
-  }
+  .restored-banner .rb-title { font-size: 12px; font-weight: 700; color: #64B5F6; margin-bottom: 4px; }
+  .restored-banner .rb-detail { font-size: 11px; color: #90CAF9; line-height: 1.5; }
+  .restored-banner .rb-dismiss { background: transparent; border: 1px solid rgba(100,181,246,0.4); color: #64B5F6; font-size: 10px; font-family: var(--font-mono); padding: 4px 10px; border-radius: 3px; cursor: pointer; margin-top: 8px; letter-spacing: 0.5px; }
+  .history-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px; margin-bottom: 12px; }
+  .history-card .hc-store { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--primary); letter-spacing: 0.5px; text-transform: uppercase; }
+  .history-card .hc-meta { font-size: 11px; color: var(--text-dim); margin-top: 4px; line-height: 1.6; }
+  .history-card .hc-stats { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+  .history-card .hc-stat { font-size: 11px; color: var(--text-desc); background: var(--surface-alt); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border-light); }
   .history-card .hc-stat strong { color: var(--primary); font-weight: 700; }
   .history-card .hc-actions { display: flex; gap: 8px; margin-top: 12px; }
   .history-card .hc-actions .btn-ghost { flex: 1; }
-  .storage-info {
-    font-size: 11px; color: var(--text-ghost); text-align: center;
-    margin-top: 16px; padding: 10px; background: var(--surface-alt);
-    border-radius: 4px; border: 1px solid var(--border-light); line-height: 1.6;
-  }
+  .storage-info { font-size: 11px; color: var(--text-ghost); text-align: center; margin-top: 16px; padding: 10px; background: var(--surface-alt); border-radius: 4px; border: 1px solid var(--border-light); line-height: 1.6; }
   .storage-info strong { color: var(--primary); }
-  .progress-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000;
-    display: none; align-items: center; justify-content: center; flex-direction: column; gap: 16px;
-  }
+  .progress-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
   .progress-overlay.open { display: flex; }
-  .progress-bar-track {
-    width: 260px; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;
-  }
-  .progress-bar-fill {
-    height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s;
-  }
+  .progress-bar-track { width: 260px; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s; }
   .progress-text { color: #ddd; font-size: 12px; font-family: var(--font-mono); }
-  .btn-pdf {
-    width: 100%; padding: 16px; background: var(--accent); color: var(--primary); border: none;
-    font-size: 14px; font-family: var(--font-display); font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase; border-radius: 4px;
-    cursor: pointer; margin-top: 12px; transition: opacity 0.15s;
-  }
+  .btn-pdf { width: 100%; padding: 16px; background: var(--accent); color: var(--primary); border: none; font-size: 14px; font-family: var(--font-display); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; border-radius: 4px; cursor: pointer; margin-top: 12px; transition: opacity 0.15s; }
   .btn-pdf:active { opacity: 0.8; }
+  /* Inventory picker */
+  .inv-search { width: 100%; background: #fff; border: 1px solid var(--border-light); color: var(--text); padding: 10px 12px; font-size: 14px; font-family: var(--font-mono); border-radius: 4px; outline: none; margin-top: 6px; }
+  .inv-search:focus { border-color: var(--primary); }
+  .inv-hint { font-size: 12px; color: var(--text-faint); padding: 14px 4px; text-align: center; font-style: italic; line-height: 1.5; }
+  .inv-list { margin-top: 8px; max-height: 240px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .inv-item { border: 1px solid var(--border-light); border-radius: 4px; padding: 10px 12px; margin-bottom: 6px; cursor: pointer; background: var(--surface); transition: all 0.12s; }
+  .inv-item:active { background: var(--surface-alt); }
+  .inv-item.active { border: 2px solid var(--primary); background: var(--primary-light); padding: 9px 11px; }
+  .inv-item .nm { font-size: 13px; font-weight: 700; color: var(--text-card); }
+  .inv-item.active .nm { color: var(--primary); }
+  .inv-item .dm { font-size: 11px; color: var(--text-dim); margin-top: 2px; letter-spacing: 0.5px; }
+  .inv-selected-note { display: none; margin-top: 8px; padding: 8px 10px; border-radius: 4px; background: var(--green-bg); border-left: 3px solid var(--green-border); font-size: 11px; color: var(--green-text); line-height: 1.5; }
+  .inv-selected-note.show { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .inv-clear { background: transparent; border: 1px solid var(--green-border); color: var(--green-text); font-size: 10px; font-family: var(--font-mono); padding: 4px 9px; border-radius: 3px; cursor: pointer; letter-spacing: 0.5px; white-space: nowrap; text-transform: uppercase; }
 </style>
 </head>
 <body>
@@ -320,15 +140,12 @@
   <div class="sub">Construction &amp; Maintenance</div>
 </div>
 
-<!-- STORE INFO -->
-<!-- Autosave indicator -->
-<div class="autosave-toast" id="autosave-toast">✓ Saved</div>
+<div class="autosave-toast" id="autosave-toast">&#10003; Saved</div>
 
-<!-- Restored banner (shown on Store Info page when data is restored) -->
 <div id="view-header" class="view active">
   <div class="body-pad">
     <div class="restored-banner" id="restored-banner">
-      <div class="rb-title">📂 Previous survey restored</div>
+      <div class="rb-title">Previous survey restored</div>
       <div class="rb-detail" id="restored-detail">Your in-progress survey has been loaded.</div>
       <button class="rb-dismiss" id="restored-dismiss">Got it</button>
     </div>
@@ -345,16 +162,20 @@
   </div>
 </div>
 
-<!-- ADD FINDING -->
 <div id="view-addFinding" class="view">
   <div class="body-pad">
     <div class="section-title" id="finding-title">New Item #1</div>
     <label class="field-label">Racking Type *</label>
     <div class="pill-grid" id="racking-pills"></div>
-    <label class="field-label">Part Type</label>
-    <input class="field" id="partType" type="text" placeholder="e.g. Arm, Upright, Beam, Shelf...">
+    <label class="field-label">Pick from Inventory</label>
+    <input class="inv-search" id="inv-search" type="text" placeholder="Search stocked parts..." autocomplete="off">
+    <div class="inv-list" id="inv-list"></div>
+    <div class="inv-selected-note" id="inv-selected-note">
+      <span id="inv-selected-text"></span>
+      <button class="inv-clear" id="inv-clear">Clear</button>
+    </div>
     <label class="field-label">Part Dimensions</label>
-    <input class="field" id="partDimensions" type="text" placeholder='e.g. 48" arm, 12&apos; upright, 4x4 base...'>
+    <input class="field" id="partDimensions" type="text" placeholder='e.g. 48&quot; arm, 12&apos; upright, 4x4 base...'>
     <label class="field-label">Location</label>
     <input class="field" id="location" type="text" placeholder="e.g. Lumber yard row 3, Back wall...">
     <label class="field-label">Quantity</label>
@@ -363,14 +184,13 @@
     <textarea class="field" id="description" placeholder="Describe what's needed, damage details, special instructions..."></textarea>
     <label class="field-label" id="photo-count-label">Photos (0)</label>
     <input type="file" id="photo-input" accept="image/*" capture="environment" multiple style="display:none">
-    <button class="btn-ghost" id="btn-photo" style="width:100%;margin-top:6px;padding:14px">📷&nbsp;&nbsp;Take Photo / Upload</button>
+    <button class="btn-ghost" id="btn-photo" style="width:100%;margin-top:6px;padding:14px">Take Photo / Upload</button>
     <div class="photo-grid" id="photo-grid"></div>
     <button class="btn-primary" id="btn-save-finding" disabled>Save Item</button>
     <button class="btn-outline" id="btn-cancel-finding">Cancel</button>
   </div>
 </div>
 
-<!-- REVIEW -->
 <div id="view-review" class="view">
   <div class="counter-bar">
     <div class="counter-num" id="review-count">0</div>
@@ -382,36 +202,34 @@
   </div>
 </div>
 
-<!-- OTHER ISSUES -->
 <div id="view-other" class="view">
   <div class="body-pad">
     <div class="section-title">Other Facility Issues or Concerns</div>
     <p style="font-size:12px;color:var(--text-dim);margin-bottom:14px;line-height:1.6">
-      Document any non-racking issues found during the site visit — structural concerns, safety hazards, lighting, signage, concrete damage, etc.
+      Document any non-racking issues found during the site visit &mdash; structural concerns, safety hazards, lighting, signage, concrete damage, etc.
     </p>
     <label class="field-label">Issue Description</label>
     <textarea class="field" id="otherIssueText" placeholder="Describe the issue, location, and any details..."></textarea>
     <label class="field-label" id="other-photo-count-label">Photos (0)</label>
     <input type="file" id="other-photo-input" accept="image/*" capture="environment" multiple style="display:none">
-    <button class="btn-ghost" id="btn-other-photo" style="width:100%;margin-top:6px;padding:14px">📷&nbsp;&nbsp;Take Photo / Upload</button>
+    <button class="btn-ghost" id="btn-other-photo" style="width:100%;margin-top:6px;padding:14px">Take Photo / Upload</button>
     <div class="photo-grid" id="other-photo-grid"></div>
     <button class="btn-primary" id="btn-save-issue">+ Add Issue</button>
     <div id="other-issues-list" style="margin-top:20px"></div>
   </div>
 </div>
 
-<!-- EXPORT -->
 <div id="view-export" class="view">
   <div class="body-pad">
     <div class="section-title">Export to FEXA</div>
     <div class="card export-ready" id="export-summary"></div>
-    <button class="btn-pdf" id="btn-pdf">📄&nbsp;&nbsp;Download PDF Report with Photos</button>
+    <button class="btn-pdf" id="btn-pdf">Download PDF Report with Photos</button>
     <div style="font-size:11px;color:var(--text-ghost);text-align:center;margin-top:8px;line-height:1.6">
-      Generates one PDF for racking and a separate PDF for other facility issues — one per FEXA work order
+      Generates one PDF for racking and a separate PDF for other facility issues &mdash; one per FEXA work order
     </div>
-    <button class="btn-outline" id="btn-copy">📋&nbsp;&nbsp;Copy Text Report to Clipboard</button>
+    <button class="btn-outline" id="btn-copy">Copy Text Report to Clipboard</button>
     <div style="font-size:11px;color:var(--text-ghost);text-align:center;margin-top:8px">
-      Text only — paste into FEXA work order description
+      Text only &mdash; paste into FEXA work order description
     </div>
     <div style="margin-top:24px">
       <div class="section-title">Report Preview</div>
@@ -421,42 +239,69 @@
   </div>
 </div>
 
-<!-- HISTORY -->
 <div id="view-history" class="view">
   <div class="body-pad">
     <div class="section-title">Past Surveys</div>
     <p style="font-size:12px;color:var(--text-dim);margin-bottom:14px;line-height:1.6">
-      Surveys are archived here when you tap "Start New Survey." Tap any to reopen — photos and all items are restored. Up to 10 surveys are kept; older ones are removed automatically.
+      Surveys are archived here when you tap "Start New Survey." Tap any to reopen &mdash; photos and all items are restored. Up to 10 surveys are kept; older ones are removed automatically.
     </p>
     <div id="history-list"></div>
     <div class="storage-info" id="storage-info"></div>
   </div>
 </div>
 
-<!-- Photo Modal -->
 <div class="modal-overlay" id="photo-modal">
   <img id="modal-img" src="" alt="Full size">
-  <button class="modal-close" id="modal-close">×</button>
+  <button class="modal-close" id="modal-close">&times;</button>
 </div>
 
-<!-- PDF Progress -->
 <div class="progress-overlay" id="pdf-progress">
   <div class="progress-text" id="pdf-progress-text">Building PDF...</div>
   <div class="progress-bar-track"><div class="progress-bar-fill" id="pdf-progress-bar" style="width:0%"></div></div>
 </div>
 
-<!-- Bottom Nav -->
 <div class="bottom-nav">
-  <button class="nav-btn active" data-view="header"><div class="icon">🏪</div>Store</button>
-  <button class="nav-btn" data-view="addFinding"><div class="icon">➕</div>Add</button>
-  <button class="nav-btn" data-view="review"><div class="icon">📋</div><span id="nav-review-label">Review (0)</span></button>
-  <button class="nav-btn" data-view="other"><div class="icon">⚠️</div>Other</button>
-  <button class="nav-btn" data-view="export"><div class="icon">📤</div>Export</button>
-  <button class="nav-btn" data-view="history"><div class="icon">📚</div>History</button>
+  <button class="nav-btn active" data-view="header"><div class="icon">&#127978;</div>Store</button>
+  <button class="nav-btn" data-view="addFinding"><div class="icon">+</div>Add</button>
+  <button class="nav-btn" data-view="review"><div class="icon">&#128203;</div><span id="nav-review-label">Review (0)</span></button>
+  <button class="nav-btn" data-view="other"><div class="icon">&#9888;</div>Other</button>
+  <button class="nav-btn" data-view="export"><div class="icon">&#128228;</div>Export</button>
+  <button class="nav-btn" data-view="history"><div class="icon">&#128218;</div>History</button>
 </div>
 
 <script>
-const RACKING_TYPES = ["Cantilever", "Pigeonhole", "Pallet Racking", "Mezzanine"];
+const RACKING_TYPES = ["Cantilever", "Pigeonhole", "Pallet Racking", "Mezzanine", "Other"];
+
+// In-storage inventory (mirrors the warehouse list; 25 stocked parts)
+const INVENTORY = [
+  { id: "part-12", rt: "Cantilever", type: "Arm",  dim: '4" x 52"',  finish: "Galvanized" },
+  { id: "part-7",  rt: "Cantilever", type: "Arm",  dim: '4" x 52"',  finish: "Green" },
+  { id: "part-13", rt: "Cantilever", type: "Arm",  dim: '6" x 52"',  finish: "Galvanized" },
+  { id: "part-8",  rt: "Cantilever", type: "Arm",  dim: '6" x 52"',  finish: "Green" },
+  { id: "part-14", rt: "Cantilever", type: "Base", dim: '8" x 52"',  finish: "Galvanized" },
+  { id: "part-9",  rt: "Cantilever", type: "Base", dim: '8" x 52"',  finish: "Green" },
+  { id: "part-6",  rt: "Cantilever", type: "Column", dim: '8" x 13\'', finish: "Green" },
+  { id: "part-11", rt: "Cantilever", type: "Horizontal Brace", dim: "5'", finish: "Green" },
+  { id: "part-10", rt: "Cantilever", type: "Brace Panel", dim: "5' x 4'", finish: "Green" },
+  { id: "part-1",  rt: "Pallet Racking", type: "Upright (w/ footplates)", dim: '12\' Tall x 48" Deep, 13 ga', finish: "Green" },
+  { id: "part-4",  rt: "Pallet Racking", type: "Upright (w/ footplates)", dim: '12\' Tall x 48" Deep, 13 ga', finish: "Galvanized" },
+  { id: "part-3",  rt: "Pallet Racking", type: "Upright (w/ footplates)", dim: '14\' Tall x 48" Deep, 13 ga', finish: "Green" },
+  { id: "part-2",  rt: "Pallet Racking", type: "Step Beam", dim: '6" x 9\', 14 ga', finish: "Green" },
+  { id: "part-5",  rt: "Pallet Racking", type: "Step Beam", dim: '6" x 9\', 14 ga', finish: "Galvanized" },
+  { id: "part-19", rt: "Pigeonhole", type: "Upright", dim: '15\' x 36", 14 ga', finish: "Galvanized" },
+  { id: "part-18", rt: "Pigeonhole", type: "Upright", dim: '15\' x 48", 14 ga', finish: "Galvanized" },
+  { id: "part-20", rt: "Pigeonhole", type: "Upright (built-in handrail)", dim: '11\' x 48", 14 ga', finish: "Galvanized" },
+  { id: "part-21", rt: "Pigeonhole", type: "HiLo Upright (built-in handrail)", dim: '15\'/11\' x 48", 14 ga', finish: "Galvanized" },
+  { id: "part-22", rt: "Pigeonhole", type: "HiLo Upright (no bracing above 88\")", dim: '15\'/11\' x 48", 14 ga', finish: "Galvanized" },
+  { id: "part-17", rt: "Pigeonhole", type: "Step Beam", dim: '3-1/2" x 9\', 16 ga', finish: "Galvanized" },
+  { id: "part-15", rt: "Pigeonhole", type: "Step Beam (Floor & Middle)", dim: '4" x 9\', 16 ga', finish: "" },
+  { id: "part-16", rt: "Pigeonhole", type: "Drop Floor Beam", dim: '3-1/2" x 9\', 16 ga', finish: "Galvanized" },
+  { id: "part-24", rt: "Pigeonhole", type: "Divider Channel", dim: '1-1/2" x 88"', finish: "Galvanized" },
+  { id: "part-23", rt: "Pigeonhole", type: "Divider Channel", dim: '3" x 88"', finish: "Galvanized" },
+  { id: "part-25", rt: "Mezzanine", type: "HiLo Upright (no webbing above 88\")", dim: '12\'/8\' x 36"', finish: "" },
+];
+function invPartType(it) { return it.finish ? it.type + " (" + it.finish + ")" : it.type; }
+
 const state = {
   storeNumber: "", storeName: "", surveyDate: new Date().toISOString().split("T")[0],
   surveyorName: "", findings: [], otherIssues: [], editingIndex: null,
@@ -466,22 +311,18 @@ let currentOtherPhotos = [];
 let currentOtherPhotoIds = [];
 
 function freshFinding() {
-  return { id: uid(), rackingType: "", partType: "", partDimensions: "", location: "", quantity: "", description: "", photoPreviews: [], photoIds: [] };
+  return { id: uid(), rackingType: "", partType: "", partDimensions: "", location: "", quantity: "", description: "", photoPreviews: [], photoIds: [], partId: "", inventoryName: "" };
 }
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 
-// ══════════════════════════════════════════
-// AUTO-SAVE / RESTORE
-// ══════════════════════════════════════════
+// === AUTO-SAVE / RESTORE ===
 const STORAGE_KEY = "mccoys_racking_survey_v1";
 const IDB_NAME = "mccoys_survey_db";
 const IDB_STORE = "survey";
 let saveTimeout = null;
 
-// Compress a photo to a max dimension and JPEG quality to keep storage small
 function compressPhoto(dataUrl, maxDim, quality) {
-  maxDim = maxDim || 1200;
-  quality = quality || 0.6;
+  maxDim = maxDim || 1200; quality = quality || 0.6;
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
@@ -492,16 +333,14 @@ function compressPhoto(dataUrl, maxDim, quality) {
       }
       const canvas = document.createElement("canvas");
       canvas.width = w; canvas.height = h;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0, w, h);
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
       resolve(canvas.toDataURL("image/jpeg", quality));
     };
-    img.onerror = () => resolve(dataUrl); // fallback to original
+    img.onerror = () => resolve(dataUrl);
     img.src = dataUrl;
   });
 }
 
-// ── IndexedDB helpers (fallback for large data) ──
 function openIDB() {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(IDB_NAME, 1);
@@ -515,8 +354,7 @@ async function idbSave(data) {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(IDB_STORE, "readwrite");
     tx.objectStore(IDB_STORE).put(data, "current");
-    tx.oncomplete = () => resolve(true);
-    tx.onerror = () => reject(tx.error);
+    tx.oncomplete = () => resolve(true); tx.onerror = () => reject(tx.error);
   });
 }
 async function idbLoad() {
@@ -524,28 +362,21 @@ async function idbLoad() {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(IDB_STORE, "readonly");
     const req = tx.objectStore(IDB_STORE).get("current");
-    req.onsuccess = () => resolve(req.result || null);
-    req.onerror = () => reject(req.error);
+    req.onsuccess = () => resolve(req.result || null); req.onerror = () => reject(req.error);
   });
 }
 async function idbClear() {
-  try {
-    const db = await openIDB();
-    const tx = db.transaction(IDB_STORE, "readwrite");
-    tx.objectStore(IDB_STORE).delete("current");
-  } catch(e) {}
+  try { const db = await openIDB(); db.transaction(IDB_STORE, "readwrite").objectStore(IDB_STORE).delete("current"); } catch(e) {}
 }
 
-// ── Per-photo IDB storage (so the main save payload stays tiny) ──
+// Per-photo IDB records — keeps the main save payload tiny no matter how many photos
 const PHOTO_PREFIX = "photo:";
-
 async function idbSavePhoto(photoId, dataUrl) {
   const db = await openIDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(IDB_STORE, "readwrite");
     tx.objectStore(IDB_STORE).put({ dataUrl }, PHOTO_PREFIX + photoId);
-    tx.oncomplete = () => resolve(true);
-    tx.onerror = () => reject(tx.error);
+    tx.oncomplete = () => resolve(true); tx.onerror = () => reject(tx.error);
   });
 }
 async function idbLoadPhoto(photoId) {
@@ -553,19 +384,12 @@ async function idbLoadPhoto(photoId) {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(IDB_STORE, "readonly");
     const req = tx.objectStore(IDB_STORE).get(PHOTO_PREFIX + photoId);
-    req.onsuccess = () => resolve(req.result ? req.result.dataUrl : null);
-    req.onerror = () => reject(req.error);
+    req.onsuccess = () => resolve(req.result ? req.result.dataUrl : null); req.onerror = () => reject(req.error);
   });
 }
 async function idbDeletePhoto(photoId) {
-  try {
-    const db = await openIDB();
-    const tx = db.transaction(IDB_STORE, "readwrite");
-    tx.objectStore(IDB_STORE).delete(PHOTO_PREFIX + photoId);
-  } catch(e) {}
+  try { const db = await openIDB(); db.transaction(IDB_STORE, "readwrite").objectStore(IDB_STORE).delete(PHOTO_PREFIX + photoId); } catch(e) {}
 }
-// Save photo with one retry — single-photo writes are tiny, but iOS Safari
-// can occasionally abort transactions on background, so a quick retry helps.
 async function idbSavePhotoSafe(photoId, dataUrl) {
   try { await idbSavePhoto(photoId, dataUrl); return true; }
   catch(e) {
@@ -574,7 +398,6 @@ async function idbSavePhotoSafe(photoId, dataUrl) {
   }
 }
 
-// ── History (archived surveys) IDB helpers ──
 const HISTORY_PREFIX = "history:";
 const HISTORY_LIMIT = 10;
 
@@ -583,8 +406,7 @@ async function idbSaveHistoryEntry(entry) {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(IDB_STORE, "readwrite");
     tx.objectStore(IDB_STORE).put(entry, HISTORY_PREFIX + entry.id);
-    tx.oncomplete = () => resolve(true);
-    tx.onerror = () => reject(tx.error);
+    tx.oncomplete = () => resolve(true); tx.onerror = () => reject(tx.error);
   });
 }
 async function idbLoadAllHistory() {
@@ -597,12 +419,9 @@ async function idbLoadAllHistory() {
     req.onsuccess = (e) => {
       const cursor = e.target.result;
       if (cursor) {
-        if (typeof cursor.key === "string" && cursor.key.indexOf(HISTORY_PREFIX) === 0) {
-          results.push(cursor.value);
-        }
+        if (typeof cursor.key === "string" && cursor.key.indexOf(HISTORY_PREFIX) === 0) results.push(cursor.value);
         cursor.continue();
       } else {
-        // Newest first
         results.sort((a, b) => new Date(b.archivedAt || 0).getTime() - new Date(a.archivedAt || 0).getTime());
         resolve(results);
       }
@@ -615,85 +434,52 @@ async function idbDeleteHistoryEntry(id) {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(IDB_STORE, "readwrite");
     tx.objectStore(IDB_STORE).delete(HISTORY_PREFIX + id);
-    tx.oncomplete = () => resolve(true);
-    tx.onerror = () => reject(tx.error);
+    tx.oncomplete = () => resolve(true); tx.onerror = () => reject(tx.error);
   });
 }
 
 function buildSaveData() {
-  // Strip the heavy photo data URLs out of the state we persist. Each photo is
-  // saved separately under photo:<id> when it's added, so we only need the IDs
-  // here. This keeps the main save payload at a few KB no matter how big the
-  // survey gets — no more "unable to save" errors.
   return {
-    storeNumber: state.storeNumber,
-    storeName: state.storeName,
-    surveyDate: state.surveyDate,
-    surveyorName: state.surveyorName,
+    storeNumber: state.storeNumber, storeName: state.storeName, surveyDate: state.surveyDate, surveyorName: state.surveyorName,
     findings: state.findings.map(f => ({ ...f, photoPreviews: [], photoIds: f.photoIds || [] })),
     otherIssues: state.otherIssues.map(i => ({ ...i, photos: [], photoIds: i.photoIds || [] })),
     savedAt: new Date().toISOString(),
   };
 }
-
 function saveState() {
   clearTimeout(saveTimeout);
   saveTimeout = setTimeout(async () => {
     const data = buildSaveData();
-    // ALWAYS save to IndexedDB — it's the authoritative store (much larger limit,
-    // won't fail when photos pile up). localStorage is just a fast cache.
     let idbOk = false, lsOk = false;
     try { await idbSave(data); idbOk = true; } catch(e) { console.warn("IDB save failed:", e); }
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      lsOk = true;
-    } catch(e) {
-      // localStorage full — REMOVE the stale entry so loadState doesn't return
-      // outdated partial data on next visit. IDB has the truth.
-      try { localStorage.removeItem(STORAGE_KEY); } catch(_) {}
-    }
-    if (idbOk || lsOk) showSaveToast();
-    else showSaveError();
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); lsOk = true; }
+    catch(e) { try { localStorage.removeItem(STORAGE_KEY); } catch(_) {} }
+    if (idbOk || lsOk) showSaveToast(); else showSaveError();
   }, 400);
 }
-
 function showSaveToast() {
-  const toast = document.getElementById("autosave-toast");
-  toast.textContent = "✓ Saved";
-  toast.style.background = "rgba(46,125,50,0.92)";
-  toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 1200);
+  const t = document.getElementById("autosave-toast");
+  t.textContent = "\u2713 Saved"; t.style.background = "rgba(46,125,50,0.92)";
+  t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 1200);
 }
 function showSaveError() {
-  const toast = document.getElementById("autosave-toast");
-  toast.textContent = "⚠ Save failed — export soon";
-  toast.style.background = "rgba(198,40,40,0.92)";
-  toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 3000);
+  const t = document.getElementById("autosave-toast");
+  t.textContent = "\u26a0 Save failed - export soon"; t.style.background = "rgba(198,40,40,0.92)";
+  t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 3000);
 }
 
 async function loadState() {
-  // Read BOTH stores and use whichever has the most recent savedAt.
-  // This prevents loading a stale localStorage copy when the latest data
-  // had to fall back to IndexedDB (e.g. localStorage hit its quota).
   let lsData = null, idbData = null;
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) lsData = JSON.parse(raw);
-  } catch(e) {}
+  try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) lsData = JSON.parse(raw); } catch(e) {}
   try { idbData = await idbLoad(); } catch(e) {}
-
   let data = null;
   if (lsData && idbData) {
-    const lsTime = new Date(lsData.savedAt || 0).getTime();
-    const idbTime = new Date(idbData.savedAt || 0).getTime();
-    data = idbTime >= lsTime ? idbData : lsData;
-  } else {
-    data = idbData || lsData;
-  }
+    const lsT = new Date(lsData.savedAt || 0).getTime();
+    const idbT = new Date(idbData.savedAt || 0).getTime();
+    data = idbT >= lsT ? idbData : lsData;
+  } else { data = idbData || lsData; }
   if (!data) return false;
   if (!data.storeNumber && !data.storeName && !data.findings?.length && !data.otherIssues?.length) return false;
-
   try {
     state.storeNumber = data.storeNumber || "";
     state.storeName = data.storeName || "";
@@ -701,34 +487,22 @@ async function loadState() {
     state.surveyorName = data.surveyorName || "";
     state.findings = data.findings || [];
     state.otherIssues = data.otherIssues || [];
-
-    // Hydrate photos: for each finding/issue, look up photo data URLs by ID.
-    // Also handle legacy data from older versions where photos were embedded
-    // inline (photoPreviews has data URLs but photoIds is empty).
     await hydratePhotos(state.findings, "photoPreviews");
     await hydratePhotos(state.otherIssues, "photos");
-
-    // Populate form fields
     document.getElementById("storeNumber").value = state.storeNumber;
     document.getElementById("storeName").value = state.storeName;
     document.getElementById("surveyDate").value = state.surveyDate;
     document.getElementById("surveyorName").value = state.surveyorName;
     updateNavCount();
-
-    // Show restored banner
     const banner = document.getElementById("restored-banner");
     const detail = document.getElementById("restored-detail");
     const parts = [];
-    if (state.storeNumber || state.storeName) parts.push(`Store #${state.storeNumber} — ${state.storeName}`);
-    if (state.findings.length) parts.push(`${state.findings.length} racking item${state.findings.length!==1?"s":""}`);
-    if (state.otherIssues.length) parts.push(`${state.otherIssues.length} other issue${state.otherIssues.length!==1?"s":""}`);
-    if (data.savedAt) {
-      const d = new Date(data.savedAt);
-      parts.push(`last saved ${d.toLocaleDateString()} ${d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`);
-    }
-    detail.textContent = parts.join(" · ");
+    if (state.storeNumber || state.storeName) parts.push("Store #" + state.storeNumber + " - " + state.storeName);
+    if (state.findings.length) parts.push(state.findings.length + " racking item" + (state.findings.length!==1?"s":""));
+    if (state.otherIssues.length) parts.push(state.otherIssues.length + " other issue" + (state.otherIssues.length!==1?"s":""));
+    if (data.savedAt) { const d = new Date(data.savedAt); parts.push("last saved " + d.toLocaleDateString() + " " + d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})); }
+    detail.textContent = parts.join(" \u00b7 ");
     banner.classList.add("show");
-
     return true;
   } catch(e) { console.warn("Load failed:", e); return false; }
 }
@@ -738,52 +512,33 @@ function clearSavedState() {
   idbClear();
 }
 
-// Walk a list of items (findings or otherIssues) and rebuild their photo
-// data-URL arrays from the per-photo IDB records. Legacy items that have
-// data URLs inline but no IDs get migrated on the fly.
 async function hydratePhotos(items, previewField) {
   for (const item of items) {
     if (!Array.isArray(item.photoIds)) item.photoIds = [];
     const inlinePreviews = Array.isArray(item[previewField]) ? item[previewField] : [];
     const hasInline = inlinePreviews.length > 0;
     const hasIds = item.photoIds.length > 0;
-
     if (hasIds) {
-      // Resolve each ID to its data URL. If a photo record went missing for
-      // any reason, skip it gracefully — we don't crash the whole load.
-      const previews = [];
-      const survivingIds = [];
+      const previews = []; const survivingIds = [];
       for (const pid of item.photoIds) {
-        try {
-          const url = await idbLoadPhoto(pid);
-          if (url) { previews.push(url); survivingIds.push(pid); }
-        } catch(e) {}
+        try { const url = await idbLoadPhoto(pid); if (url) { previews.push(url); survivingIds.push(pid); } } catch(e) {}
       }
-      item[previewField] = previews;
-      item.photoIds = survivingIds;
+      item[previewField] = previews; item.photoIds = survivingIds;
     } else if (hasInline) {
-      // Legacy: photos are embedded as data URLs in the saved state.
-      // Move them into their own IDB records and remember the IDs.
       const newIds = [];
       for (const url of inlinePreviews) {
         const pid = uid();
-        try { await idbSavePhotoSafe(pid, url); newIds.push(pid); }
-        catch(e) { newIds.push(pid); /* keep ID anyway, photo lives in memory for this session */ }
+        try { await idbSavePhotoSafe(pid, url); newIds.push(pid); } catch(e) { newIds.push(pid); }
       }
-      item.photoIds = newIds;
-      item[previewField] = inlinePreviews;
-    } else {
-      item[previewField] = [];
-    }
+      item.photoIds = newIds; item[previewField] = inlinePreviews;
+    } else { item[previewField] = []; }
   }
 }
 
-// Dismiss restored banner
 document.getElementById("restored-dismiss").addEventListener("click", () => {
   document.getElementById("restored-banner").classList.remove("show");
 });
 
-// Load on startup
 (async () => { await loadState(); validateHeader(); })();
 
 document.getElementById("surveyDate").value = state.surveyDate;
@@ -791,11 +546,18 @@ const pillGrid = document.getElementById("racking-pills");
 RACKING_TYPES.forEach(t => {
   const d = document.createElement("div");
   d.className = "pill"; d.textContent = t;
-  d.addEventListener("click", () => { currentFinding.rackingType = t; renderPills(); validateFinding(); });
+  if (t === "Other") d.style.gridColumn = "1 / -1";
+  d.addEventListener("click", () => {
+    if (currentFinding.rackingType !== t) {
+      currentFinding.rackingType = t;
+      currentFinding.partId = ""; currentFinding.inventoryName = "";
+    }
+    document.getElementById("inv-search").value = "";
+    renderPills(); renderInvPicker(); validateFinding();
+  });
   pillGrid.appendChild(d);
 });
 
-// NAV
 const views = ["header","addFinding","review","other","export","history"];
 const navBtns = document.querySelectorAll(".nav-btn");
 function showView(name) {
@@ -804,7 +566,7 @@ function showView(name) {
   if (name==="review") renderReview();
   if (name==="export") renderExport();
   if (name==="other") renderOtherIssues();
-  if (name==="addFinding") { renderPills(); validateFinding(); }
+  if (name==="addFinding") { renderPills(); renderInvPicker(); validateFinding(); }
   if (name==="history") renderHistory();
 }
 navBtns.forEach(b => {
@@ -815,7 +577,6 @@ navBtns.forEach(b => {
   });
 });
 
-// HEADER
 ["storeNumber","storeName","surveyorName"].forEach(id => {
   document.getElementById(id).addEventListener("input", e => { state[id] = e.target.value; validateHeader(); saveState(); });
 });
@@ -830,24 +591,82 @@ document.getElementById("btn-start").addEventListener("click", () => {
   showView(state.findings.length > 0 ? "review" : "addFinding");
 });
 
-// FINDING
 function renderPills() { pillGrid.querySelectorAll(".pill").forEach((p,i) => p.classList.toggle("active", RACKING_TYPES[i]===currentFinding.rackingType)); }
+
+function renderInvPicker(filter) {
+  const list = document.getElementById("inv-list");
+  const note = document.getElementById("inv-selected-note");
+  const noteText = document.getElementById("inv-selected-text");
+  const search = document.getElementById("inv-search");
+  list.innerHTML = "";
+  if (currentFinding.partId) {
+    noteText.textContent = "\u2713 Filled from inventory - edit fields below if needed";
+    note.classList.add("show");
+  } else { note.classList.remove("show"); }
+  if (!currentFinding.rackingType) {
+    search.style.display = "none";
+    list.innerHTML = '<div class="inv-hint">Select a racking type above to see stocked parts.</div>';
+    return;
+  }
+  const inCategory = INVENTORY.filter(it => it.rt === currentFinding.rackingType);
+  if (inCategory.length === 0) {
+    search.style.display = "none";
+    list.innerHTML = '<div class="inv-hint">One-off / special item - no stocked parts.<br>Fill in dimensions, qty and notes below.</div>';
+    return;
+  }
+  search.style.display = "";
+  const q = (filter || "").trim().toLowerCase();
+  let items = inCategory;
+  if (q) items = items.filter(it => (it.type + " " + it.dim + " " + it.finish).toLowerCase().includes(q));
+  if (items.length === 0) {
+    list.innerHTML = '<div class="inv-hint">No stocked parts match your search.<br>Or type the part manually below.</div>';
+    return;
+  }
+  items.forEach(it => {
+    const row = document.createElement("div");
+    row.className = "inv-item" + (it.id === currentFinding.partId ? " active" : "");
+    const nm = it.finish ? it.type + " \u2014 " + it.finish : it.type;
+    row.innerHTML = '<div class="nm">' + esc(nm) + '</div><div class="dm">' + esc(it.dim) + '</div>';
+    row.addEventListener("click", () => selectInvItem(it));
+    list.appendChild(row);
+  });
+}
+function selectInvItem(it) {
+  currentFinding.partId = it.id;
+  currentFinding.inventoryName = (it.finish ? it.type + " \u2014 " + it.finish : it.type) + ", " + it.dim;
+  currentFinding.partType = invPartType(it);
+  currentFinding.partDimensions = it.dim;
+  document.getElementById("partDimensions").value = currentFinding.partDimensions;
+  renderInvPicker(document.getElementById("inv-search").value);
+}
+document.getElementById("inv-search").addEventListener("input", e => renderInvPicker(e.target.value));
+document.getElementById("inv-clear").addEventListener("click", () => {
+  currentFinding.partId = ""; currentFinding.inventoryName = "";
+  document.getElementById("inv-search").value = "";
+  renderInvPicker();
+});
+
 function validateFinding() { document.getElementById("btn-save-finding").disabled = !currentFinding.rackingType; }
 function resetFindingForm() {
-  document.getElementById("finding-title").textContent = state.editingIndex !== null ? `Edit Item #${state.editingIndex+1}` : `New Item #${state.findings.length+1}`;
-  document.getElementById("partType").value = currentFinding.partType;
+  document.getElementById("finding-title").textContent = state.editingIndex !== null ? "Edit Item #" + (state.editingIndex+1) : "New Item #" + (state.findings.length+1);
   document.getElementById("partDimensions").value = currentFinding.partDimensions;
   document.getElementById("location").value = currentFinding.location;
   document.getElementById("quantity").value = currentFinding.quantity;
   document.getElementById("description").value = currentFinding.description;
   document.getElementById("btn-save-finding").textContent = state.editingIndex !== null ? "Update Item" : "Save Item";
-  renderPills(); renderFindingPhotos(); validateFinding();
+  document.getElementById("inv-search").value = "";
+  renderPills(); renderInvPicker(); renderFindingPhotos(); validateFinding();
 }
-["partType","partDimensions","location","quantity","description"].forEach(id => {
-  document.getElementById(id).addEventListener("input", e => { currentFinding[id] = e.target.value; });
+["partDimensions","location","quantity","description"].forEach(id => {
+  document.getElementById(id).addEventListener("input", e => {
+    currentFinding[id] = e.target.value;
+    if (id === "partDimensions" && currentFinding.partId) {
+      currentFinding.partId = ""; currentFinding.inventoryName = "";
+      renderInvPicker(document.getElementById("inv-search").value);
+    }
+  });
 });
 
-// FINDING PHOTOS
 document.getElementById("btn-photo").addEventListener("click", () => document.getElementById("photo-input").click());
 document.getElementById("photo-input").addEventListener("change", e => {
   Array.from(e.target.files).forEach(file => {
@@ -857,8 +676,6 @@ document.getElementById("photo-input").addEventListener("change", e => {
       const photoId = uid();
       currentFinding.photoPreviews.push(compressed);
       currentFinding.photoIds.push(photoId);
-      // Save the photo to its own tiny IDB record — this is what keeps the
-      // main state save small (just IDs) no matter how many photos pile up.
       idbSavePhotoSafe(photoId, compressed);
       renderFindingPhotos();
     };
@@ -868,12 +685,12 @@ document.getElementById("photo-input").addEventListener("change", e => {
 });
 function renderFindingPhotos() {
   const grid = document.getElementById("photo-grid"); grid.innerHTML = "";
-  document.getElementById("photo-count-label").textContent = `Photos (${currentFinding.photoPreviews.length})`;
+  document.getElementById("photo-count-label").textContent = "Photos (" + currentFinding.photoPreviews.length + ")";
   currentFinding.photoPreviews.forEach((src,i) => {
     const wrap = document.createElement("div"); wrap.className = "photo-wrap";
     const img = document.createElement("img"); img.className = "photo-thumb"; img.src = src;
     img.addEventListener("click", () => openModal(src));
-    const rm = document.createElement("button"); rm.className = "photo-remove"; rm.textContent = "×";
+    const rm = document.createElement("button"); rm.className = "photo-remove"; rm.textContent = "\u00d7";
     rm.addEventListener("click", () => {
       const removedId = currentFinding.photoIds[i];
       currentFinding.photoPreviews.splice(i,1);
@@ -884,7 +701,6 @@ function renderFindingPhotos() {
     wrap.appendChild(img); wrap.appendChild(rm); grid.appendChild(wrap);
   });
 }
-
 document.getElementById("btn-save-finding").addEventListener("click", () => {
   if (!currentFinding.rackingType) return;
   if (state.editingIndex !== null) state.findings[state.editingIndex] = { ...currentFinding };
@@ -896,27 +712,26 @@ document.getElementById("btn-cancel-finding").addEventListener("click", () => {
   currentFinding = freshFinding(); state.editingIndex = null; resetFindingForm(); showView("review");
 });
 
-// REVIEW
 function renderReview() {
   document.getElementById("review-count").textContent = state.findings.length;
-  document.getElementById("review-label").textContent = `Item${state.findings.length!==1?"s":""} Found — Store #${state.storeNumber}`;
+  document.getElementById("review-label").textContent = "Item" + (state.findings.length!==1?"s":"") + " Found - Store #" + state.storeNumber;
   const list = document.getElementById("findings-list"); list.innerHTML = "";
   if (state.findings.length === 0) {
-    list.innerHTML = '<div class="empty"><div class="icon">📋</div><div>No findings yet</div><div class="hint">Tap "Add Item" to start</div></div>';
+    list.innerHTML = '<div class="empty"><div class="icon">&#128203;</div><div>No findings yet</div><div class="hint">Tap "Add Item" to start</div></div>';
     return;
   }
   state.findings.forEach((f,i) => {
     const card = document.createElement("div"); card.className = "card";
-    let html = `<div class="card-title">#${i+1} — ${f.rackingType}</div><div class="card-detail">`;
-    if (f.partType) html += `<div><span class="lbl">Part:</span> ${esc(f.partType)}</div>`;
-    if (f.partDimensions) html += `<div><span class="lbl">Dimensions:</span> ${esc(f.partDimensions)}</div>`;
-    if (f.location) html += `<div><span class="lbl">Location:</span> ${esc(f.location)}</div>`;
-    if (f.quantity) html += `<div><span class="lbl">Qty:</span> ${esc(f.quantity)}</div>`;
-    if (f.description) html += `<div class="card-desc">${esc(f.description)}</div>`;
+    let html = '<div class="card-title">#' + (i+1) + ' - ' + esc(f.rackingType) + '</div><div class="card-detail">';
+    if (f.partType) html += '<div><span class="lbl">Part:</span> ' + esc(f.partType) + '</div>';
+    if (f.partDimensions) html += '<div><span class="lbl">Dimensions:</span> ' + esc(f.partDimensions) + '</div>';
+    if (f.location) html += '<div><span class="lbl">Location:</span> ' + esc(f.location) + '</div>';
+    if (f.quantity) html += '<div><span class="lbl">Qty:</span> ' + esc(f.quantity) + '</div>';
+    if (f.description) html += '<div class="card-desc">' + esc(f.description) + '</div>';
     if (f.photoPreviews.length > 0) {
       html += '<div class="photo-row">';
-      f.photoPreviews.slice(0,4).forEach(src => { html += `<img src="${src}" alt="" onclick="openModal('${src.replace(/'/g,"\\'")}')">` });
-      if (f.photoPreviews.length > 4) html += `<span style="font-size:11px;color:var(--text-ghost);align-self:center">+${f.photoPreviews.length-4}</span>`;
+      f.photoPreviews.slice(0,4).forEach(src => { html += '<img src="' + src + '" alt="" onclick="openModal(\'' + src.replace(/'/g,"\\'") + '\')">'; });
+      if (f.photoPreviews.length > 4) html += '<span style="font-size:11px;color:var(--text-ghost);align-self:center">+' + (f.photoPreviews.length-4) + '</span>';
       html += '</div>';
     }
     html += '</div><div class="card-actions"></div>';
@@ -937,7 +752,7 @@ document.getElementById("btn-add-new").addEventListener("click", () => {
   currentFinding = freshFinding(); state.editingIndex = null; resetFindingForm(); showView("addFinding");
 });
 function updateNavCount() {
-  document.getElementById("nav-review-label").textContent = `Review (${state.findings.length})`;
+  document.getElementById("nav-review-label").textContent = "Review (" + state.findings.length + ")";
   validateHeader();
 }
 
@@ -960,16 +775,15 @@ document.getElementById("other-photo-input").addEventListener("change", e => {
 });
 function renderOtherPhotos() {
   const grid = document.getElementById("other-photo-grid"); grid.innerHTML = "";
-  document.getElementById("other-photo-count-label").textContent = `Photos (${currentOtherPhotos.length})`;
+  document.getElementById("other-photo-count-label").textContent = "Photos (" + currentOtherPhotos.length + ")";
   currentOtherPhotos.forEach((src,i) => {
     const wrap = document.createElement("div"); wrap.className = "photo-wrap";
     const img = document.createElement("img"); img.className = "photo-thumb"; img.src = src;
     img.addEventListener("click", () => openModal(src));
-    const rm = document.createElement("button"); rm.className = "photo-remove"; rm.textContent = "×";
+    const rm = document.createElement("button"); rm.className = "photo-remove"; rm.textContent = "\u00d7";
     rm.addEventListener("click", () => {
       const removedId = currentOtherPhotoIds[i];
-      currentOtherPhotos.splice(i,1);
-      currentOtherPhotoIds.splice(i,1);
+      currentOtherPhotos.splice(i,1); currentOtherPhotoIds.splice(i,1);
       if (removedId) idbDeletePhoto(removedId);
       renderOtherPhotos();
     });
@@ -981,24 +795,23 @@ document.getElementById("btn-save-issue").addEventListener("click", () => {
   if (!text) return;
   state.otherIssues.push({ id: uid(), text, photos: [...currentOtherPhotos], photoIds: [...currentOtherPhotoIds] });
   document.getElementById("otherIssueText").value = "";
-  currentOtherPhotos = [];
-  currentOtherPhotoIds = [];
+  currentOtherPhotos = []; currentOtherPhotoIds = [];
   renderOtherPhotos(); renderOtherIssues(); saveState();
 });
 function renderOtherIssues() {
   const list = document.getElementById("other-issues-list"); list.innerHTML = "";
   if (state.otherIssues.length === 0) return;
   const title = document.createElement("div"); title.className = "section-title";
-  title.textContent = `Logged Issues (${state.otherIssues.length})`; title.style.marginTop = "8px";
+  title.textContent = "Logged Issues (" + state.otherIssues.length + ")"; title.style.marginTop = "8px";
   list.appendChild(title);
   state.otherIssues.forEach((issue,i) => {
     const card = document.createElement("div"); card.className = "card";
-    let html = `<div style="font-size:12px;font-weight:700;color:var(--text-card);margin-bottom:6px">#${i+1}</div>`;
-    html += `<div style="font-size:13px;color:var(--text-desc);line-height:1.6">${esc(issue.text)}</div>`;
+    let html = '<div style="font-size:12px;font-weight:700;color:var(--text-card);margin-bottom:6px">#' + (i+1) + '</div>';
+    html += '<div style="font-size:13px;color:var(--text-desc);line-height:1.6">' + esc(issue.text) + '</div>';
     if (issue.photos.length > 0) {
       html += '<div class="photo-row" style="margin-top:8px">';
-      issue.photos.slice(0,4).forEach(src => { html += `<img src="${src}" alt="" onclick="openModal('${src.replace(/'/g,"\\'")}')">` });
-      if (issue.photos.length > 4) html += `<span style="font-size:11px;color:var(--text-ghost);align-self:center">+${issue.photos.length-4}</span>`;
+      issue.photos.slice(0,4).forEach(src => { html += '<img src="' + src + '" alt="" onclick="openModal(\'' + src.replace(/'/g,"\\'") + '\')">'; });
+      if (issue.photos.length > 4) html += '<span style="font-size:11px;color:var(--text-ghost);align-self:center">+' + (issue.photos.length-4) + '</span>';
       html += '</div>';
     }
     html += '<div class="card-actions"></div>';
@@ -1017,85 +830,70 @@ function renderOtherIssues() {
 // EXPORT TEXT
 function buildExportText() {
   const L = [];
-  L.push("══════════════════════════════════════════");
-  L.push("McCOYS BUILDING SUPPLY — RACKING SURVEY");
-  L.push("══════════════════════════════════════════");
+  L.push("==========================================");
+  L.push("McCOYS BUILDING SUPPLY - RACKING SURVEY");
+  L.push("==========================================");
   L.push("");
-  L.push(`Store: #${state.storeNumber} — ${state.storeName}`);
-  L.push(`Date: ${state.surveyDate}`);
-  L.push(`Surveyor: ${state.surveyorName}`);
-  L.push(`Total Racking Items: ${state.findings.length}`);
+  L.push("Store: #" + state.storeNumber + " - " + state.storeName);
+  L.push("Date: " + state.surveyDate);
+  L.push("Surveyor: " + state.surveyorName);
+  L.push("Total Racking Items: " + state.findings.length);
   L.push("");
   state.findings.forEach((f,i) => {
-    L.push("──────────────────────────────────────────");
-    L.push(`ITEM #${i+1} — ${f.rackingType}`);
-    L.push("──────────────────────────────────────────");
-    if (f.partType) L.push(`Part Type: ${f.partType}`);
-    if (f.partDimensions) L.push(`Part Dimensions: ${f.partDimensions}`);
-    if (f.location) L.push(`Location: ${f.location}`);
-    if (f.quantity) L.push(`Quantity: ${f.quantity}`);
-    if (f.description) L.push(`Description/Notes: ${f.description}`);
-    L.push(`Photos: ${f.photoPreviews.length} attached`);
+    L.push("------------------------------------------");
+    L.push("ITEM #" + (i+1) + " - " + f.rackingType);
+    L.push("------------------------------------------");
+    if (f.partType) L.push("Part Type: " + f.partType);
+    if (f.partDimensions) L.push("Part Dimensions: " + f.partDimensions);
+    if (f.location) L.push("Location: " + f.location);
+    if (f.quantity) L.push("Quantity: " + f.quantity);
+    if (f.description) L.push("Description/Notes: " + f.description);
+    L.push("Photos: " + f.photoPreviews.length + " attached");
     L.push("");
   });
   if (state.otherIssues.length > 0) {
-    L.push("══════════════════════════════════════════");
+    L.push("==========================================");
     L.push("OTHER FACILITY ISSUES OR CONCERNS");
-    L.push("══════════════════════════════════════════");
+    L.push("==========================================");
     L.push("");
     state.otherIssues.forEach((issue,i) => {
-      L.push(`ISSUE #${i+1}:`);
+      L.push("ISSUE #" + (i+1) + ":");
       L.push(issue.text);
-      if (issue.photos.length > 0) L.push(`Photos: ${issue.photos.length} attached`);
+      if (issue.photos.length > 0) L.push("Photos: " + issue.photos.length + " attached");
       L.push("");
     });
   }
   return L.join("\n");
 }
-
 function renderExport() {
-  const totalPhotos = state.findings.reduce((a,f) => a + f.photoPreviews.length, 0)
-    + state.otherIssues.reduce((a,iss) => a + iss.photos.length, 0);
+  const totalPhotos = state.findings.reduce((a,f) => a + f.photoPreviews.length, 0) + state.otherIssues.reduce((a,iss) => a + iss.photos.length, 0);
   document.getElementById("export-summary").innerHTML =
-    `<div class="title">Ready to Export</div>
-     <div class="detail">
-       Store #${esc(state.storeNumber)} — ${esc(state.storeName)}<br>
-       ${state.findings.length} racking item${state.findings.length!==1?"s":""}<br>
-       ${state.otherIssues.length} other issue${state.otherIssues.length!==1?"s":""}<br>
-       ${totalPhotos} photo${totalPhotos!==1?"s":""} — will be embedded in PDF
-     </div>`;
+    '<div class="title">Ready to Export</div><div class="detail">Store #' + esc(state.storeNumber) + ' - ' + esc(state.storeName) + '<br>' +
+    state.findings.length + ' racking item' + (state.findings.length!==1?"s":"") + '<br>' +
+    state.otherIssues.length + ' other issue' + (state.otherIssues.length!==1?"s":"") + '<br>' +
+    totalPhotos + ' photo' + (totalPhotos!==1?"s":"") + ' - will be embedded in PDF</div>';
   document.getElementById("report-preview").textContent = buildExportText();
 }
 
-// CLIPBOARD
 document.getElementById("btn-copy").addEventListener("click", async () => {
   const text = buildExportText();
   try { await navigator.clipboard.writeText(text); alert("Report copied to clipboard!"); }
   catch { const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); alert("Report copied!"); }
 });
 
-// ══════════════════════════════════════════
-// PDF GENERATION
-// ══════════════════════════════════════════
+// === PDF GENERATION (two-PDF: racking + facility) ===
 document.getElementById("btn-pdf").addEventListener("click", handleDownloadPDFs);
 
 async function handleDownloadPDFs() {
   const hasRacking = state.findings.length > 0;
   const hasOther = state.otherIssues.length > 0;
-  if (!hasRacking && !hasOther) {
-    alert("Add at least one racking item or other issue before downloading.");
-    return;
-  }
+  if (!hasRacking && !hasOther) { alert("Add at least one racking item or other issue before downloading."); return; }
   if (hasRacking && hasOther) {
-    // Two separate PDFs — one for each FEXA work order
     await generatePDF("racking");
-    await sleep(500); // brief pause so browser starts the first download cleanly before the second
+    await sleep(500);
     await generatePDF("other");
-  } else if (hasRacking) {
-    await generatePDF("racking");
-  } else {
-    await generatePDF("other");
-  }
+  } else if (hasRacking) { await generatePDF("racking"); }
+  else { await generatePDF("other"); }
 }
 
 async function generatePDF(mode) {
@@ -1110,68 +908,30 @@ async function generatePDF(mode) {
   const ml = 15, mr = 15, mt = 15;
   const cw = pw - ml - mr;
   let y = mt;
-
   const progress = document.getElementById("pdf-progress");
   const pbar = document.getElementById("pdf-progress-bar");
   const ptext = document.getElementById("pdf-progress-text");
   progress.classList.add("open");
-
-  // Count total photos for progress (only for sections being included)
-  let totalPhotos = (includeRacking ? state.findings.reduce((a,f) => a + f.photoPreviews.length, 0) : 0)
-    + (includeOther ? state.otherIssues.reduce((a,iss) => a + iss.photos.length, 0) : 0);
+  let totalPhotos = (includeRacking ? state.findings.reduce((a,f) => a + f.photoPreviews.length, 0) : 0) + (includeOther ? state.otherIssues.reduce((a,iss) => a + iss.photos.length, 0) : 0);
   let photosProcessed = 0;
-
-  function updateProgress(msg, pct) {
-    ptext.textContent = msg;
-    pbar.style.width = pct + "%";
-  }
-
-  function checkPage(need) {
-    if (y + need > ph - 15) { doc.addPage(); y = mt; return true; }
-    return false;
-  }
-
-  function drawLine(x1, yy, x2) {
-    doc.setDrawColor(180); doc.setLineWidth(0.3); doc.line(x1, yy, x2, yy);
-  }
-
-  // Helper: wrap text and return lines
-  function getLines(text, maxW) {
-    return doc.splitTextToSize(text, maxW);
-  }
-
+  function updateProgress(msg, pct) { ptext.textContent = msg; pbar.style.width = pct + "%"; }
+  function checkPage(need) { if (y + need > ph - 15) { doc.addPage(); y = mt; return true; } return false; }
+  function drawLine(x1, yy, x2) { doc.setDrawColor(180); doc.setLineWidth(0.3); doc.line(x1, yy, x2, yy); }
+  function getLines(text, maxW) { return doc.splitTextToSize(text, maxW); }
   try {
-    updateProgress("Building header...", 5);
-    await sleep(50);
-
-    // ── HEADER ──
-    doc.setFillColor(27, 94, 32);
-    doc.rect(0, 0, pw, 28, "F");
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.setTextColor(255, 214, 0);
+    updateProgress("Building header...", 5); await sleep(50);
+    doc.setFillColor(27, 94, 32); doc.rect(0, 0, pw, 28, "F");
+    doc.setFont("helvetica", "bold"); doc.setFontSize(18); doc.setTextColor(255, 214, 0);
     doc.text("McCOYS BUILDING SUPPLY", ml, 12);
-    doc.setFontSize(11);
-    doc.setTextColor(255);
-    doc.text(reportTitle, ml, 20);
-    doc.setFontSize(8);
-    doc.setTextColor(255, 214, 0);
-    doc.text("Construction & Maintenance", ml, 25);
-
+    doc.setFontSize(11); doc.setTextColor(255); doc.text(reportTitle, ml, 20);
+    doc.setFontSize(8); doc.setTextColor(255, 214, 0); doc.text("Construction & Maintenance", ml, 25);
     y = 36;
-
-    // ── SURVEY INFO ──
-    doc.setTextColor(60);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
+    doc.setTextColor(60); doc.setFont("helvetica", "bold"); doc.setFontSize(10);
     doc.text("SURVEY INFORMATION", ml, y); y += 2;
     drawLine(ml, y, ml + cw); y += 5;
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.setTextColor(80);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(80);
     const info = [
-      ["Store:", `#${state.storeNumber} — ${state.storeName}`],
+      ["Store:", "#" + state.storeNumber + " - " + state.storeName],
       ["Date:", state.surveyDate],
       ["Surveyor:", state.surveyorName],
       includeRacking && ["Racking Items:", String(state.findings.length)],
@@ -1185,127 +945,83 @@ async function generatePDF(mode) {
     });
     y += 5;
 
-    // ── FINDINGS ──
     if (includeRacking) {
-    updateProgress("Adding findings...", 10);
-    await sleep(50);
-
-    for (let i = 0; i < state.findings.length; i++) {
-      const f = state.findings[i];
-      checkPage(35);
-
-      // Item header bar
-      doc.setFillColor(232, 245, 233);
-      doc.rect(ml, y - 4, cw, 8, "F");
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(11);
-      doc.setTextColor(27, 94, 32);
-      doc.text(`ITEM #${i + 1} — ${f.rackingType}`, ml + 2, y + 1);
-      y += 8;
-
-      doc.setFontSize(9);
-      doc.setTextColor(80);
-      const fields = [
-        f.partType && ["Part Type:", f.partType],
-        f.partDimensions && ["Dimensions:", f.partDimensions],
-        f.location && ["Location:", f.location],
-        f.quantity && ["Quantity:", f.quantity],
-      ].filter(Boolean);
-
-      fields.forEach(([lbl, val]) => {
-        checkPage(6);
-        doc.setFont("helvetica", "bold"); doc.text(lbl, ml + 2, y);
-        doc.setFont("helvetica", "normal"); doc.text(val, ml + 28, y);
-        y += 5;
-      });
-
-      if (f.description) {
-        checkPage(10);
-        doc.setFont("helvetica", "bold"); doc.text("Notes:", ml + 2, y); y += 4;
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8);
-        const descLines = getLines(f.description, cw - 4);
-        descLines.forEach(line => {
-          checkPage(4);
-          doc.text(line, ml + 2, y); y += 3.8;
+      updateProgress("Adding findings...", 10); await sleep(50);
+      for (let i = 0; i < state.findings.length; i++) {
+        const f = state.findings[i];
+        checkPage(35);
+        doc.setFillColor(232, 245, 233); doc.rect(ml, y - 4, cw, 8, "F");
+        doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(27, 94, 32);
+        doc.text("ITEM #" + (i + 1) + " - " + f.rackingType, ml + 2, y + 1);
+        y += 8;
+        doc.setFontSize(9); doc.setTextColor(80);
+        const fields = [
+          f.partType && ["Part Type:", f.partType],
+          f.partDimensions && ["Dimensions:", f.partDimensions],
+          f.location && ["Location:", f.location],
+          f.quantity && ["Quantity:", f.quantity],
+        ].filter(Boolean);
+        fields.forEach(([lbl, val]) => {
+          checkPage(6);
+          doc.setFont("helvetica", "bold"); doc.text(lbl, ml + 2, y);
+          doc.setFont("helvetica", "normal"); doc.text(val, ml + 28, y);
+          y += 5;
         });
-        doc.setFontSize(9);
-        y += 2;
-      }
-
-      // Photos
-      if (f.photoPreviews.length > 0) {
-        for (let pi = 0; pi < f.photoPreviews.length; pi++) {
-          updateProgress(`Item ${i+1}: photo ${pi+1} of ${f.photoPreviews.length}...`, 10 + (photosProcessed / totalPhotos) * 80);
-          const imgData = f.photoPreviews[pi];
-          try {
-            const dims = await getImageDims(imgData);
-            const maxW = cw / 2 - 2;
-            const maxH = 55;
-            let iw, ih;
-            const ratio = dims.w / dims.h;
-            if (ratio > maxW / maxH) { iw = maxW; ih = iw / ratio; }
-            else { ih = maxH; iw = ih * ratio; }
-
-            checkPage(ih + 4);
-            const xOffset = (pi % 2 === 0) ? ml : ml + cw / 2 + 1;
-            if (pi % 2 === 0 && pi > 0) y += 2;
-            const imgY = y;
-            doc.addImage(imgData, "JPEG", xOffset, imgY, iw, ih);
-            if (pi % 2 === 1 || pi === f.photoPreviews.length - 1) y = imgY + ih + 2;
-          } catch(err) { console.warn("Photo error", err); }
-          photosProcessed++;
+        if (f.description) {
+          checkPage(10);
+          doc.setFont("helvetica", "bold"); doc.text("Notes:", ml + 2, y); y += 4;
+          doc.setFont("helvetica", "normal"); doc.setFontSize(8);
+          const descLines = getLines(f.description, cw - 4);
+          descLines.forEach(line => { checkPage(4); doc.text(line, ml + 2, y); y += 3.8; });
+          doc.setFontSize(9); y += 2;
+        }
+        if (f.photoPreviews.length > 0) {
+          for (let pi = 0; pi < f.photoPreviews.length; pi++) {
+            updateProgress("Item " + (i+1) + ": photo " + (pi+1) + " of " + f.photoPreviews.length + "...", 10 + (photosProcessed / totalPhotos) * 80);
+            const imgData = f.photoPreviews[pi];
+            try {
+              const dims = await getImageDims(imgData);
+              const maxW = cw / 2 - 2; const maxH = 55;
+              let iw, ih; const ratio = dims.w / dims.h;
+              if (ratio > maxW / maxH) { iw = maxW; ih = iw / ratio; } else { ih = maxH; iw = ih * ratio; }
+              checkPage(ih + 4);
+              const xOffset = (pi % 2 === 0) ? ml : ml + cw / 2 + 1;
+              if (pi % 2 === 0 && pi > 0) y += 2;
+              const imgY = y;
+              doc.addImage(imgData, "JPEG", xOffset, imgY, iw, ih);
+              if (pi % 2 === 1 || pi === f.photoPreviews.length - 1) y = imgY + ih + 2;
+            } catch(err) { console.warn("Photo error", err); }
+            photosProcessed++;
+          }
+          y += 4;
         }
         y += 4;
       }
-      y += 4;
     }
-    } // end if (includeRacking)
 
-    // ── OTHER ISSUES ──
     if (includeOther && state.otherIssues.length > 0) {
-      updateProgress("Adding other issues...", 90);
-      checkPage(20);
-
-      doc.setFillColor(27, 94, 32);
-      doc.rect(ml, y - 4, cw, 8, "F");
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(11);
-      doc.setTextColor(255);
+      updateProgress("Adding other issues...", 90); checkPage(20);
+      doc.setFillColor(27, 94, 32); doc.rect(ml, y - 4, cw, 8, "F");
+      doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(255);
       doc.text("OTHER FACILITY ISSUES OR CONCERNS", ml + 2, y + 1);
       y += 10;
-
       for (let i = 0; i < state.otherIssues.length; i++) {
         const issue = state.otherIssues[i];
         checkPage(15);
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.setTextColor(60);
-        doc.text(`Issue #${i + 1}`, ml, y); y += 5;
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(9);
-        doc.setTextColor(80);
+        doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(60);
+        doc.text("Issue #" + (i + 1), ml, y); y += 5;
+        doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(80);
         const issueLines = getLines(issue.text, cw - 2);
-        issueLines.forEach(line => {
-          checkPage(4);
-          doc.text(line, ml + 2, y); y += 4;
-        });
+        issueLines.forEach(line => { checkPage(4); doc.text(line, ml + 2, y); y += 4; });
         y += 2;
-
         if (issue.photos.length > 0) {
           for (let pi = 0; pi < issue.photos.length; pi++) {
-            updateProgress(`Issue ${i+1}: photo ${pi+1}...`, 90 + (photosProcessed / totalPhotos) * 10);
+            updateProgress("Issue " + (i+1) + ": photo " + (pi+1) + "...", 90 + (photosProcessed / totalPhotos) * 10);
             try {
               const dims = await getImageDims(issue.photos[pi]);
-              const maxW = cw / 2 - 2;
-              const maxH = 55;
-              let iw, ih;
-              const ratio = dims.w / dims.h;
-              if (ratio > maxW / maxH) { iw = maxW; ih = iw / ratio; }
-              else { ih = maxH; iw = ih * ratio; }
-
+              const maxW = cw / 2 - 2; const maxH = 55;
+              let iw, ih; const ratio = dims.w / dims.h;
+              if (ratio > maxW / maxH) { iw = maxW; ih = iw / ratio; } else { ih = maxH; iw = ih * ratio; }
               checkPage(ih + 4);
               const xOffset = (pi % 2 === 0) ? ml : ml + cw / 2 + 1;
               if (pi % 2 === 0 && pi > 0) y += 2;
@@ -1321,29 +1037,19 @@ async function generatePDF(mode) {
       }
     }
 
-    // ── FOOTER ──
     const pageCount = doc.getNumberOfPages();
     for (let p = 1; p <= pageCount; p++) {
       doc.setPage(p);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7);
-      doc.setTextColor(150);
-      doc.text(`${footerLabel} — Store #${state.storeNumber} — ${state.surveyDate}`, ml, ph - 8);
-      doc.text(`Page ${p} of ${pageCount}`, pw - mr - 20, ph - 8);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(150);
+      doc.text(footerLabel + " - Store #" + state.storeNumber + " - " + state.surveyDate, ml, ph - 8);
+      doc.text("Page " + p + " of " + pageCount, pw - mr - 20, ph - 8);
     }
-
-    updateProgress("Saving PDF...", 98);
-    await sleep(100);
-
-    const filename = `McCoys_${fileLabel}_Store${state.storeNumber}_${state.surveyDate}.pdf`;
+    updateProgress("Saving PDF...", 98); await sleep(100);
+    const filename = "McCoys_" + fileLabel + "_Store" + state.storeNumber + "_" + state.surveyDate + ".pdf";
     doc.save(filename);
-
-    updateProgress("Done!", 100);
-    await sleep(500);
-
+    updateProgress("Done!", 100); await sleep(500);
   } catch(err) {
-    console.error("PDF generation error:", err);
-    alert("Error generating PDF. Please try again.");
+    console.error("PDF generation error:", err); alert("Error generating PDF. Please try again.");
   }
   progress.classList.remove("open");
 }
@@ -1352,13 +1058,12 @@ function getImageDims(dataUrl) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
-    img.onerror = reject;
-    img.src = dataUrl;
+    img.onerror = reject; img.src = dataUrl;
   });
 }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// NEW SURVEY (archives current to history first)
+// NEW SURVEY (archive current → start fresh)
 document.getElementById("btn-new-survey").addEventListener("click", async () => {
   const hasData = state.storeNumber || state.storeName || state.findings.length > 0 || state.otherIssues.length > 0;
   let prompt = "Start a new survey?";
@@ -1366,11 +1071,9 @@ document.getElementById("btn-new-survey").addEventListener("click", async () => 
   if (!confirm(prompt)) return;
   if (hasData) {
     try { await archiveCurrentSurvey(); }
-    catch(e) { console.warn("Archive failed:", e); if (!confirm("Couldn't save to history — start new anyway?")) return; }
+    catch(e) { console.warn("Archive failed:", e); if (!confirm("Couldn't save to history - start new anyway?")) return; }
   }
-  clearSavedState();
-  resetCurrentSurvey();
-  showView("header");
+  clearSavedState(); resetCurrentSurvey(); showView("header");
 });
 
 function resetCurrentSurvey() {
@@ -1382,106 +1085,77 @@ function resetCurrentSurvey() {
   ["storeNumber","storeName","surveyorName"].forEach(id => document.getElementById(id).value = "");
   document.getElementById("surveyDate").value = state.surveyDate;
   document.getElementById("otherIssueText").value = "";
-  renderOtherPhotos();
-  updateNavCount();
+  renderOtherPhotos(); updateNavCount();
 }
 
 async function archiveCurrentSurvey() {
-  // Archive lightweight: keep photoIds, drop the heavy data URLs. The actual
-  // photo records stay in IDB under photo:<id> and are now "owned" by this
-  // history entry (we never copy photo bytes).
   const entry = {
     id: uid(),
-    storeNumber: state.storeNumber,
-    storeName: state.storeName,
-    surveyDate: state.surveyDate,
-    surveyorName: state.surveyorName,
+    storeNumber: state.storeNumber, storeName: state.storeName, surveyDate: state.surveyDate, surveyorName: state.surveyorName,
     findings: state.findings.map(f => ({ ...f, photoPreviews: [], photoIds: f.photoIds || [] })),
     otherIssues: state.otherIssues.map(i => ({ ...i, photos: [], photoIds: i.photoIds || [] })),
     archivedAt: new Date().toISOString(),
   };
   await idbSaveHistoryEntry(entry);
-  // Auto-prune oldest if over the limit — also delete their photo records.
   const all = await idbLoadAllHistory();
   if (all.length > HISTORY_LIMIT) {
     const toRemove = all.slice(HISTORY_LIMIT);
-    for (const old of toRemove) {
-      await deleteHistoryEntryAndPhotos(old);
-    }
+    for (const old of toRemove) await deleteHistoryEntryAndPhotos(old);
   }
 }
-
 async function deleteHistoryEntryAndPhotos(entry) {
   const ids = [];
   (entry.findings || []).forEach(f => (f.photoIds || []).forEach(pid => ids.push(pid)));
   (entry.otherIssues || []).forEach(i => (i.photoIds || []).forEach(pid => ids.push(pid)));
-  for (const pid of ids) { await idbDeletePhoto(pid); }
+  for (const pid of ids) await idbDeletePhoto(pid);
   await idbDeleteHistoryEntry(entry.id);
 }
 
-// HISTORY VIEW
 async function renderHistory() {
   const list = document.getElementById("history-list");
   const info = document.getElementById("storage-info");
-  list.innerHTML = '<div class="empty"><div style="font-size:11px;color:var(--text-ghost)">Loading…</div></div>';
+  list.innerHTML = '<div class="empty"><div style="font-size:11px;color:var(--text-ghost)">Loading...</div></div>';
   info.innerHTML = "";
-
   let entries = [];
   try { entries = await idbLoadAllHistory(); }
   catch(e) { list.innerHTML = '<div class="empty"><div>Could not load history</div></div>'; return; }
-
   if (entries.length === 0) {
-    list.innerHTML = '<div class="empty"><div class="icon">📚</div><div>No archived surveys yet</div><div class="hint">Complete a survey, then tap "Start New Survey" on the Export tab to archive it here.</div></div>';
+    list.innerHTML = '<div class="empty"><div class="icon">&#128218;</div><div>No archived surveys yet</div><div class="hint">Complete a survey, then tap "Start New Survey" on the Export tab to archive it here.</div></div>';
     return;
   }
-
-  list.innerHTML = "";
-  let totalBytes = 0;
+  list.innerHTML = ""; let totalBytes = 0;
   entries.forEach(entry => {
-    const photoCount = (entry.findings || []).reduce((a,f) => a + (f.photoPreviews?.length || 0), 0)
-      + (entry.otherIssues || []).reduce((a,iss) => a + (iss.photos?.length || 0), 0);
+    const photoCount = (entry.findings || []).reduce((a,f) => a + (f.photoPreviews?.length || 0), 0) + (entry.otherIssues || []).reduce((a,iss) => a + (iss.photos?.length || 0), 0);
     const itemCount = (entry.findings || []).length;
     const issueCount = (entry.otherIssues || []).length;
     const archived = entry.archivedAt ? new Date(entry.archivedAt) : null;
-    const archivedStr = archived ? `${archived.toLocaleDateString()} ${archived.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}` : "";
-    // Rough byte estimate (data URLs are base64, ~1.37x raw)
+    const archivedStr = archived ? archived.toLocaleDateString() + " " + archived.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : "";
     const approxBytes = JSON.stringify(entry).length;
     totalBytes += approxBytes;
-
-    const card = document.createElement("div");
-    card.className = "history-card";
-    card.innerHTML = `
-      <div class="hc-store">#${esc(entry.storeNumber || "—")} — ${esc(entry.storeName || "Unnamed")}</div>
-      <div class="hc-meta">
-        Surveyed ${esc(entry.surveyDate || "—")} by ${esc(entry.surveyorName || "—")}<br>
-        Archived ${esc(archivedStr)}
-      </div>
-      <div class="hc-stats">
-        <span class="hc-stat"><strong>${itemCount}</strong> racking item${itemCount!==1?"s":""}</span>
-        <span class="hc-stat"><strong>${issueCount}</strong> other issue${issueCount!==1?"s":""}</span>
-        <span class="hc-stat"><strong>${photoCount}</strong> photo${photoCount!==1?"s":""}</span>
-      </div>
-      <div class="hc-actions">
-        <button class="btn-ghost" data-action="open">Open</button>
-        <button class="btn-ghost danger" data-action="delete">Delete</button>
-      </div>
-    `;
+    const card = document.createElement("div"); card.className = "history-card";
+    card.innerHTML =
+      '<div class="hc-store">#' + esc(entry.storeNumber || "-") + ' - ' + esc(entry.storeName || "Unnamed") + '</div>' +
+      '<div class="hc-meta">Surveyed ' + esc(entry.surveyDate || "-") + ' by ' + esc(entry.surveyorName || "-") + '<br>Archived ' + esc(archivedStr) + '</div>' +
+      '<div class="hc-stats">' +
+        '<span class="hc-stat"><strong>' + itemCount + '</strong> racking item' + (itemCount!==1?"s":"") + '</span>' +
+        '<span class="hc-stat"><strong>' + issueCount + '</strong> other issue' + (issueCount!==1?"s":"") + '</span>' +
+        '<span class="hc-stat"><strong>' + photoCount + '</strong> photo' + (photoCount!==1?"s":"") + '</span>' +
+      '</div>' +
+      '<div class="hc-actions"><button class="btn-ghost" data-action="open">Open</button><button class="btn-ghost danger" data-action="delete">Delete</button></div>';
     card.querySelector('[data-action="open"]').addEventListener("click", () => openHistoryEntry(entry));
     card.querySelector('[data-action="delete"]').addEventListener("click", () => deleteHistoryEntry(entry));
     list.appendChild(card);
   });
-
   const mb = (totalBytes / (1024 * 1024)).toFixed(1);
-  info.innerHTML = `<strong>${entries.length}</strong> survey${entries.length!==1?"s":""} stored — ~<strong>${mb} MB</strong> on this device<br>Up to ${HISTORY_LIMIT} surveys are kept; oldest auto-removed`;
+  info.innerHTML = '<strong>' + entries.length + '</strong> survey' + (entries.length!==1?"s":"") + ' stored - ~<strong>' + mb + ' MB</strong> on this device<br>Up to ' + HISTORY_LIMIT + ' surveys are kept; oldest auto-removed';
 }
 
 async function openHistoryEntry(entry) {
   const currentHasData = state.storeNumber || state.storeName || state.findings.length > 0 || state.otherIssues.length > 0;
   if (currentHasData) {
-    if (!confirm(`Open archived survey for #${entry.storeNumber} ${entry.storeName}?\n\nYour current in-progress survey will be saved to History first.`)) return;
+    if (!confirm("Open archived survey for #" + entry.storeNumber + " " + entry.storeName + "?\n\nYour current in-progress survey will be saved to History first.")) return;
     try { await archiveCurrentSurvey(); } catch(e) { console.warn("Archive failed:", e); }
   }
-  // Load entry into state
   state.storeNumber = entry.storeNumber || "";
   state.storeName = entry.storeName || "";
   state.surveyDate = entry.surveyDate || new Date().toISOString().split("T")[0];
@@ -1490,64 +1164,42 @@ async function openHistoryEntry(entry) {
   state.otherIssues = (entry.otherIssues || []).map(i => ({ ...i, photos: i.photos || [], photoIds: i.photoIds || [] }));
   state.editingIndex = null;
   currentFinding = freshFinding();
-  currentOtherPhotos = [];
-  currentOtherPhotoIds = [];
-
-  // Pull each photo's data URL back from its IDB record
+  currentOtherPhotos = []; currentOtherPhotoIds = [];
   await hydratePhotos(state.findings, "photoPreviews");
   await hydratePhotos(state.otherIssues, "photos");
-
-  // Update form fields
   document.getElementById("storeNumber").value = state.storeNumber;
   document.getElementById("storeName").value = state.storeName;
   document.getElementById("surveyDate").value = state.surveyDate;
   document.getElementById("surveyorName").value = state.surveyorName;
   document.getElementById("otherIssueText").value = "";
-  renderOtherPhotos();
-  updateNavCount();
-
-  // Remove the now-loaded history record (it's the current draft now).
-  // We deliberately DO NOT delete the photo records — they're now owned by current.
+  renderOtherPhotos(); updateNavCount();
   try { await idbDeleteHistoryEntry(entry.id); } catch(e) {}
-
-  // Persist as current and jump to Review
   saveState();
   showView(state.findings.length > 0 ? "review" : "header");
 }
-
 async function deleteHistoryEntry(entry) {
-  if (!confirm(`Delete archived survey for #${entry.storeNumber} ${entry.storeName}?\n\nThis cannot be undone.`)) return;
+  if (!confirm("Delete archived survey for #" + entry.storeNumber + " " + entry.storeName + "?\n\nThis cannot be undone.")) return;
   try { await deleteHistoryEntryAndPhotos(entry); }
-  catch(e) { alert("Could not delete — try again."); return; }
+  catch(e) { alert("Could not delete - try again."); return; }
   renderHistory();
 }
 
-// MODAL
 function openModal(src) { document.getElementById("modal-img").src = src; document.getElementById("photo-modal").classList.add("open"); }
 document.getElementById("photo-modal").addEventListener("click", () => document.getElementById("photo-modal").classList.remove("open"));
 document.getElementById("modal-close").addEventListener("click", () => document.getElementById("photo-modal").classList.remove("open"));
 
 function esc(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
 
-// Save when leaving or switching apps
 window.addEventListener("beforeunload", () => {
   const data = buildSaveData();
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {
-    // Quota hit — clear the stale entry so loadState falls through to IDB next time.
-    // IDB save isn't reliable in beforeunload (async), but the most recent saveState()
-    // call will have already pushed to IDB.
-    try { localStorage.removeItem(STORAGE_KEY); } catch(_) {}
-  }
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+  catch(e) { try { localStorage.removeItem(STORAGE_KEY); } catch(_) {} }
 });
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") {
     const data = buildSaveData();
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
-    catch(e) {
-      // localStorage full — clear stale entry so it doesn't lie to us on reload
-      try { localStorage.removeItem(STORAGE_KEY); } catch(_) {}
-    }
-    // Also fire async IDB save — has better chance of completing on visibilitychange than beforeunload
+    catch(e) { try { localStorage.removeItem(STORAGE_KEY); } catch(_) {} }
     idbSave(data).catch(() => {});
   }
 });

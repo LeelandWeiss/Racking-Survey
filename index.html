@@ -507,9 +507,9 @@ async function loadState() {
   } catch(e) { console.warn("Load failed:", e); return false; }
 }
 
-function clearSavedState() {
+async function clearSavedState() {
   try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
-  idbClear();
+  try { await idbClear(); } catch(e) {}
 }
 
 async function hydratePhotos(items, previewField) {
@@ -550,7 +550,12 @@ RACKING_TYPES.forEach(t => {
   d.addEventListener("click", () => {
     if (currentFinding.rackingType !== t) {
       currentFinding.rackingType = t;
+      // Type changed — the auto-filled Dimensions no longer applies to this
+      // category. Clear both state and the visible input so a stale value
+      // from the previous pick can't be saved by accident.
       currentFinding.partId = ""; currentFinding.inventoryName = "";
+      currentFinding.partType = ""; currentFinding.partDimensions = "";
+      document.getElementById("partDimensions").value = "";
     }
     document.getElementById("inv-search").value = "";
     renderPills(); renderInvPicker(); validateFinding();
@@ -1066,14 +1071,26 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 // NEW SURVEY (archive current → start fresh)
 document.getElementById("btn-new-survey").addEventListener("click", async () => {
   const hasData = state.storeNumber || state.storeName || state.findings.length > 0 || state.otherIssues.length > 0;
-  let prompt = "Start a new survey?";
-  if (hasData) prompt = "Save current survey to History and start a new one?";
-  if (!confirm(prompt)) return;
+  let promptText = "Start a new survey?";
+  if (hasData) promptText = "Save current survey to History and start a new one?";
+  if (!confirm(promptText)) return;
   if (hasData) {
-    try { await archiveCurrentSurvey(); }
-    catch(e) { console.warn("Archive failed:", e); if (!confirm("Couldn't save to history - start new anyway?")) return; }
+    const t = document.getElementById("autosave-toast");
+    // Blue "in progress" toast so you can see the archive step is running
+    t.textContent = "Saving to History..."; t.style.background = "rgba(21,101,192,0.92)"; t.classList.add("show");
+    try {
+      await archiveCurrentSurvey();
+      t.textContent = "\u2713 Saved to History"; t.style.background = "rgba(46,125,50,0.92)";
+      setTimeout(() => t.classList.remove("show"), 1800);
+    } catch(e) {
+      console.warn("Archive failed:", e);
+      t.classList.remove("show");
+      // Loud alert (not just console) so a failed archive never gets discarded silently
+      alert("Couldn't save this survey to History.\n\nExport the PDFs before continuing so you don't lose the work, then tap Start New Survey again.");
+      return;
+    }
   }
-  clearSavedState(); resetCurrentSurvey(); showView("header");
+  await clearSavedState(); resetCurrentSurvey(); showView("header");
 });
 
 function resetCurrentSurvey() {
@@ -1088,6 +1105,16 @@ function resetCurrentSurvey() {
   renderOtherPhotos(); updateNavCount();
 }
 
+async function idbLoadOne(key) {
+  const db = await openIDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, "readonly");
+    const req = tx.objectStore(IDB_STORE).get(key);
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => reject(req.error);
+  });
+}
+
 async function archiveCurrentSurvey() {
   const entry = {
     id: uid(),
@@ -1096,7 +1123,20 @@ async function archiveCurrentSurvey() {
     otherIssues: state.otherIssues.map(i => ({ ...i, photos: [], photoIds: i.photoIds || [] })),
     archivedAt: new Date().toISOString(),
   };
-  await idbSaveHistoryEntry(entry);
+  // Retry the write up to 3 times — iOS Safari can silently abort IDB
+  // transactions when the app backgrounds mid-save. After each attempt,
+  // read the record back to confirm it actually landed on disk.
+  let lastErr = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      await idbSaveHistoryEntry(entry);
+      const verify = await idbLoadOne(HISTORY_PREFIX + entry.id);
+      if (verify) { lastErr = null; break; }
+      lastErr = new Error("archive write silently dropped");
+    } catch(e) { lastErr = e; }
+    await new Promise(r => setTimeout(r, 250));
+  }
+  if (lastErr) throw lastErr;
   const all = await idbLoadAllHistory();
   if (all.length > HISTORY_LIMIT) {
     const toRemove = all.slice(HISTORY_LIMIT);
@@ -1125,7 +1165,7 @@ async function renderHistory() {
   }
   list.innerHTML = ""; let totalBytes = 0;
   entries.forEach(entry => {
-    const photoCount = (entry.findings || []).reduce((a,f) => a + (f.photoPreviews?.length || 0), 0) + (entry.otherIssues || []).reduce((a,iss) => a + (iss.photos?.length || 0), 0);
+    const photoCount = (entry.findings || []).reduce((a,f) => a + (f.photoIds?.length || 0), 0) + (entry.otherIssues || []).reduce((a,iss) => a + (iss.photoIds?.length || 0), 0);
     const itemCount = (entry.findings || []).length;
     const issueCount = (entry.otherIssues || []).length;
     const archived = entry.archivedAt ? new Date(entry.archivedAt) : null;
